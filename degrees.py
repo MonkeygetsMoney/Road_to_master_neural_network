@@ -62,11 +62,15 @@ def main():
     load_data(directory)
     print("Data loaded.")
 
-    source = neighbors_for_person(input("Name: "))
+    source = shortest_path(input("Name: "), None)
+    #source = neighbors_for_person(source)
     if source is None:
         sys.exit("Person not found.")
     else:
         print(source)
+        # print(names)
+        #print(people)
+        # print(movies)
     # target = person_id_for_name(input("Name: "))
     # if target is None:
     #     sys.exit("Person not found.")
@@ -93,6 +97,23 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    name1 = source.lower()
+    #name2 = target.lower()
+    if name1 in names:
+        for name in names:
+            if name1 == name:
+                # use loop to get the value of name (since it's in a dict)
+                for value in names[name]:
+                    name1_id = value
+                    #return value
+
+    # try to get the movies the actor starred in
+    if name1_id in people:
+        for person in people:
+            if name1_id == person:
+                movies_id = people[person]['movies']
+                return movies_id
+
 
     # TODO
     raise NotImplementedError
@@ -129,7 +150,7 @@ def neighbors_for_person(person_id):
     Returns (movie_id, person_id) pairs for people
     who starred with a given person.
     """
-    movie_ids = people[person_id]["movies"]
+    movie_ids = people[person_id]["movies"] # add the pperson into the dictionary
     neighbors = set()
     for movie_id in movie_ids:
         for person_id in movies[movie_id]["stars"]:

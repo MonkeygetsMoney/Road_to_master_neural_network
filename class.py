@@ -2,6 +2,7 @@
 class Pizza:
     # define the function for the class
     def __init__(self, crust, toppings):
+        # self is the variable define for this class
         # __init__ initialize the input argument
         self.crust = crust
         self.toppings = toppings
