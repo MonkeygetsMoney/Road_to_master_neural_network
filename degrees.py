@@ -63,11 +63,12 @@ def main():
     print("Data loaded.")
 
     source = shortest_path(input("Name: "), None)
-    #source = neighbors_for_person(source)
+    related = neighbors_for_person(input('ID: '))
     if source is None:
         sys.exit("Person not found.")
     else:
         print(source)
+        print(related)
         # print(names)
         #print(people)
         # print(movies)
