@@ -1,6 +1,7 @@
 # experiment with the class object and methods in util.py
 
 from util import Node, StackFrontier, QueueFrontier
+import random
 
 # root
 a = Node(state='A', parent=None, action=None)
@@ -25,32 +26,44 @@ queue = QueueFrontier() # first-in first-out
 stack.add(a)
 queue.add(a)
 goal_state = 'F' # defined the goal state
+state_list = [b, c, d, e, f]
+random.shuffle(state_list)
+count = 0
 
 while True:
-    node = stack.remove()
+    node = queue.remove()
+    actions = []
+    cells = []
     if node.state == goal_state:
-        actions = []
 
         # walking backward like in the lecture
         while node.parent is not None:
             actions.append(node.action)
+            cells.append(node.state)
+            node = node.parent # make the node new parent node
 
-        print(actions.reverse())
+        actions.reverse()
+        cells.reverse()
+        print(actions)
+        print(cells)
+        print(count)
         break
 
     else:
-        for n in [b, c, d, e, f]:
+        for n in state_list:
             if n.parent == node:
-                stack.add(n)
+                queue.add(n)
+
+        count += 1
 
 for n in [a, b, c]:
     stack.add(n) # add the node to the frontier
     queue.add(n)
 
-print('Stack order:')
-while not stack.empty():
-    print(stack.remove().state)
+# print('Stack order:')
+# while not stack.empty():
+#     print(stack.remove().state)
 
-print('Queue order:')
-while not queue.empty():
-    print(queue.remove().state)
+# print('Queue order:')
+# while not queue.empty():
+#     print(queue.remove().state)
