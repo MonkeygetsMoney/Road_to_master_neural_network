@@ -131,11 +131,11 @@ def shortest_path(source, target):
 
     # set up node
     initial_state = Node(state=name1_id, parent=None, action=None)
-    stack.add(initial_state) 
+    queue.add(initial_state) 
     goal_state = name2_id
     state_explored = []
     while True:
-        node = stack.remove()
+        node = queue.remove()
         actions = []
 
         if node.state == goal_state:
@@ -149,11 +149,11 @@ def shortest_path(source, target):
 
             # find the neighbor frontier
             for action, state in neighbors_for_person(node.state):
-                # check if the frontier in the frontier or in the explored state
+                # check if the node is already in the frontier or in the explored state
                 if not stack.contains_state(state) and state not in state_explored:
                     # set up new node
                     child = Node(state=state, parent=node, action=action)
-                    stack.add(child)
+                    queue.add(child)
 
 
     return state_explored
