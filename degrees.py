@@ -62,14 +62,14 @@ def main():
     load_data(directory)
     print("Data loaded.")
 
-    source = shortest_path(input("Name: "), None)
-    related = neighbors_for_person(input('ID: '))
+    name1 = input("Name: ")
+    name2 = input('Name: ')
+    source = shortest_path(name1, name2)
     if source is None:
         sys.exit("Person not found.")
     else:
         print(source)
-        print(related)
-        # print(names)
+        #print(movies)
         #print(people)
         # print(movies)
     # target = person_id_for_name(input("Name: "))
@@ -98,23 +98,65 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+
+    stack = StackFrontier() # last-in first-out
+    queue = QueueFrontier()
+
     name1 = source.lower()
-    #name2 = target.lower()
-    if name1 in names:
+    name2 = target.lower()
+    if name1 in names and name2 in names:
         for name in names:
             if name1 == name:
                 # use loop to get the value of name (since it's in a dict)
                 for value in names[name]:
                     name1_id = value
-                    #return value
+                    # use this as the root, initial state
+
+            if name2 == name:
+                for value in names[name]:
+                    name2_id = value # this is the goal state
 
     # try to get the movies the actor starred in
     if name1_id in people:
         for person in people:
             if name1_id == person:
-                movies_id = people[person]['movies']
-                return movies_id
+                movie_ids = people[person]['movies']
 
+    starred_list = []
+    for movie_id in movie_ids:
+        # starred_list.append(movie_id)
+        for movie in movies:
+            if movie == movie_id:
+                starred_list.append(movies[movie_id]['stars'])
+
+    # set up node
+    initial_state = Node(state=name1_id, parent=None, action=None)
+    stack.add(initial_state) 
+    goal_state = name2_id
+    state_explored = []
+    while True:
+        node = stack.remove()
+        actions = []
+
+        if node.state == goal_state:
+            print('yeah')
+            break
+        else:
+            # if node.action is not None:
+            #     state_explored.append((node.state, node.action))
+            # else:
+            state_explored.append(node.state)
+
+            # find the neighbor frontier
+            for action, state in neighbors_for_person(node.state):
+                # check if the frontier in the frontier or in the explored state
+                if not stack.contains_state(state) and state not in state_explored:
+                    # set up new node
+                    child = Node(state=state, parent=node, action=action)
+                    stack.add(child)
+
+
+    return state_explored
 
     # TODO
     raise NotImplementedError
