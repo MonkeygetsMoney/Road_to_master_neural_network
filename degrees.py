@@ -135,28 +135,28 @@ def shortest_path(source, target):
     goal_state = name2_id
     state_explored = []
     while True:
-        node = queue.remove()
-        actions = []
-
-        if node.state == goal_state:
-            print('yeah')
-            break
+        if queue.empty():
+            print('frontier is empty')
+            return goal_state
         else:
-            # if node.action is not None:
-            #     state_explored.append((node.state, node.action))
-            # else:
-            state_explored.append(node.state)
+            node = queue.remove()
+            if node.state == goal_state:
+                print('yeah')
+                return state_explored
+            else:
+                    # if node.action is not None:
+                    #     state_explored.append((node.state, node.action))
+                    # else:
+                state_explored.append(node.state)
 
-            # find the neighbor frontier
-            for action, state in neighbors_for_person(node.state):
-                # check if the node is already in the frontier or in the explored state
-                if not stack.contains_state(state) and state not in state_explored:
-                    # set up new node
-                    child = Node(state=state, parent=node, action=action)
-                    queue.add(child)
+                    # find the neighbor frontier
+                for action, state in neighbors_for_person(node.state):
+                        # check if the node is already in the frontier or in the explored state
+                    if not queue.contains_state(state) and state not in state_explored:
+                            # set up new node
+                        child = Node(state=state, parent=node, action=action)
+                        queue.add(child)
 
-
-    return state_explored
 
     # TODO
     raise NotImplementedError
