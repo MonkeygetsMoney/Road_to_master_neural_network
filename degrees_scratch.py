@@ -134,15 +134,25 @@ def shortest_path(source, target):
     queue.add(initial_state) 
     goal_state = name2_id
     state_explored = []
+    # path explored doesn't mean it's the path that lead to the goal
     while True:
         if queue.empty():
             print('frontier is empty')
-            return goal_state
+            return None
         else:
             node = queue.remove()
             if node.state == goal_state:
-                print('yeah')
-                return state_explored
+                actions = []
+                cells = []
+
+                # working backward to find the path to the goal
+                while node.parent is not None:
+                    actions.append(node.action)
+                    cells.append(node.state)
+                    node = node.parent
+                actions.reverse()
+                cells.reverse()
+                return actions
             else:
                     # if node.action is not None:
                     #     state_explored.append((node.state, node.action))
