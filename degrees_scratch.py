@@ -144,6 +144,7 @@ def shortest_path(source, target):
             if node.state == goal_state:
                 actions = []
                 cells = []
+                combine = []
 
                 # working backward to find the path to the goal
                 while node.parent is not None:
@@ -152,7 +153,11 @@ def shortest_path(source, target):
                     node = node.parent
                 actions.reverse()
                 cells.reverse()
-                return actions
+
+                for i in range(len(actions)):
+                    combine.append((actions[i], cells[i]))
+
+                return combine
             else:
                     # if node.action is not None:
                     #     state_explored.append((node.state, node.action))
