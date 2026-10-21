@@ -1,6 +1,6 @@
 # experiment with the class object and methods in util.py
 
-from util import Node, StackFrontier, QueueFrontier
+from degrees.util import Node, StackFrontier, QueueFrontier
 import random
 
 # root
