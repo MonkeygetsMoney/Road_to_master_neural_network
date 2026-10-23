@@ -7,9 +7,9 @@ def initial_state():
     """
     Returns starting state of the board.
     """
-    return [[EMPTY, EMPTY, EMPTY],
-            [EMPTY, EMPTY, EMPTY],
-            [EMPTY, EMPTY, EMPTY]]
+    return [[O, EMPTY, O],
+            [EMPTY, O, EMPTY],
+            [O, EMPTY, EMPTY]]
 
 def player(board):
     """
@@ -50,7 +50,57 @@ def actions(board):
 
     return possible_actions
 
+def terminal(board):
+    """
+    Returns True if game is over, False otherwise.
+    """
+    # we can assume that there is only one possible winnin situation (one with 3 in a row)
+    for i in range(len(board)):
+        check = []
+        for j in range(len(board)):
+            character = f'{board[i][j]}'
+            check.append(character)
+        result_check = ''.join(check)
+
+        if result_check == 3*'X' or result_check == 3*'O':
+            print(result_check)
+            return True
+        else:
+            check = []
+
+        for j in range(len(board)):
+            character = f'{board[j][i]}'
+            check.append(character)
+        result_check = ''.join(check)
+        if result_check == 3*'X' or result_check == 3*'O':
+            return True
+        else:
+            check = []
+
+        for j in range(len(board)):
+            character = f'{board[j][j]}'
+            check.append(character)
+        result_check = ''.join(check)
+        if result_check == 3*'X' or result_check == 3*'O':
+            return True
+        else:
+            check = []
+
+        for j in range(len(board)):
+            character = f'{board[j][2-j]}'
+            check.append(character)
+        result_check = ''.join(check)
+        if result_check == 3*'X' or result_check == 3*'O':
+            return True
+        else:
+            check = []
+
+    return False
+        
+
 board = initial_state()
+
 possible_actions = actions(board)
 turn = player(board)
-print(possible_actions, f'current turn is {turn}')
+check_game = terminal(board)
+print(check_game)
