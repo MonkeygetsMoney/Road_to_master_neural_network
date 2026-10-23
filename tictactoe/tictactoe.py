@@ -22,6 +22,27 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
+    count = {
+        'X': 0,
+        'O': 0
+    }
+    # check the count of X and O
+
+    for i in range(len(board)):
+        for j in range(len(board[j])):
+            if board[i][j] == X:
+                count[X] += 1
+            elif board[i][j] == O:
+                count[O] += 1
+
+    total = 0 # how many characters currently on the board
+    for character in count:
+        total += count[character]
+
+    if total % 2 == 0:
+        return X
+    else:
+        return O
     raise NotImplementedError
 
 
