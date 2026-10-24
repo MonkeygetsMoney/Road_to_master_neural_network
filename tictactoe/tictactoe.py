@@ -99,8 +99,10 @@ def winner(board):
 
         for check_game in check:
             row = ''.join(check[check_game])
-            if row in winning:
-                return row
+            if row == winning[0]:
+                return X
+            elif row == winning[1]:
+                return O
             else:
                 continue
 
@@ -131,10 +133,9 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    winning = ['XXX', 'OOO']
-    if winner(board) == winning[0]:
+    if winner(board) == X:
         return 1
-    elif winner(board) == winning[1]:
+    elif winner(board) == O:
         return -1
     else:
         # if nothing just return 0
@@ -173,12 +174,13 @@ def minimax(board):
                 moves[action] = score
             # get the max values in the dict
             max_move = max(moves, key=moves.get)
-            return moves                
+            return max_move                
         elif player(board) == O:
             for action in actions(board):
-                score = max_value(result(board, action))
+                score = min_value(result(board, action))
                 moves[action] = score
-            return moves
+            min_move = min(moves, key=moves.get)
+            return min_move
     raise NotImplementedError
 
 board = initial_state()
