@@ -95,15 +95,12 @@ def terminal(board):
             check['l_diagonal'].append(f'{board[j][j]}')
             check['r_diagonal'].append(f'{board[j][2-j]}')
 
-        row = ''.join(check['row'])
-        column = ''.join(check['column'])
-        l_diagonal = ''.join(check['l_diagonal'])
-        r_diagonal = ''.join(check['r_diagonal'])
-
-        if row in winning or column in winning or l_diagonal in winning or r_diagonal in winning:
-            return True
-        else:
-            continue
+        for check_game in check:
+            row = ''.join(check[check_game])
+            if row in winning:
+                return True
+            else:
+                continue
 
     return False
     
@@ -114,6 +111,30 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
+    winning = ['XXX', 'OOO']
+    for i in range(len(board)):
+        # put dict here to reset for each iteration
+        check = {
+            'row': [],
+            'column': [],
+            'l_diagonal': [],
+            'r_diagonal': []
+        }
+        for j in range(len(board[i])):
+            check['row'].append(f'{board[i][j]}')
+            check['column'].append(f'{board[j][i]}')
+            check['l_diagonal'].append(f'{board[j][j]}')
+            check['r_diagonal'].append(f'{board[j][2-j]}')
+    
+        for check_game in check:
+            row = ''.join(check[check_game])
+            if row is winning[0]:
+                return 1
+            elif row is winning[1]:
+                return -1
+
+    # if nothing just return 0
+    return 0
     raise NotImplementedError
 
 
@@ -121,6 +142,8 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+    if terminal(board):
+        return None
     raise NotImplementedError
 
 board = initial_state()
