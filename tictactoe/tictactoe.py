@@ -80,6 +80,33 @@ def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
+    winning = ['XXX', 'OOO']
+    for i in range(len(board)):
+        # put dict here to reset for each iteration
+        check = {
+            'row': [],
+            'column': [],
+            'l_diagonal': [],
+            'r_diagonal': []
+        }
+        for j in range(len(board[i])):
+            check['row'].append(f'{board[i][j]}')
+            check['column'].append(f'{board[j][i]}')
+            check['l_diagonal'].append(f'{board[j][j]}')
+            check['r_diagonal'].append(f'{board[j][2-j]}')
+
+        row = ''.join(check['row'])
+        column = ''.join(check['column'])
+        l_diagonal = ''.join(check['l_diagonal'])
+        r_diagonal = ''.join(check['r_diagonal'])
+
+        if row in winning or column in winning or l_diagonal in winning or r_diagonal in winning:
+            return True
+        else:
+            continue
+
+    return False
+    
     raise NotImplementedError
 
 
@@ -95,3 +122,7 @@ def minimax(board):
     Returns the optimal action for the current player on the board.
     """
     raise NotImplementedError
+
+board = initial_state()
+check_result = terminal(board)
+print(check_result)
