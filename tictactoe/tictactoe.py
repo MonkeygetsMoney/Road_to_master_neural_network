@@ -14,9 +14,9 @@ def initial_state():
     """
     Returns starting state of the board.
     """
-    return [[O, EMPTY, EMPTY],
-            [EMPTY, O, EMPTY],
-            [EMPTY, EMPTY, O]]
+    return [[EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY]]
 
 
 def player(board):
@@ -30,7 +30,7 @@ def player(board):
     # check the count of X and O
 
     for i in range(len(board)):
-        for j in range(len(board[j])):
+        for j in range(len(board[i])):
             if board[i][j] == X:
                 count[X] += 1
             elif board[i][j] == O:
@@ -68,10 +68,12 @@ def result(board, action):
     Returns the board that results from making move (i, j) on the board.
     """
     # action is only one move at a time
-    turn = player(board) # either X or O
+    # make deep copy at the result function
+    result_board = copy.deepcopy(board)
+    turn = player(result_board) # either X or O
     i, j = action
-    board[i][j] = turn
-    return board
+    result_board[i][j] = turn
+    return result_board
     raise NotImplementedError
 
 
@@ -136,9 +138,26 @@ def utility(board):
     else:
         # if nothing just return 0
         return 0
+
     raise NotImplementedError
 
+def max_value(board):
+    if terminal(board):
+        return utility(board)
+    else:
+        v = -math.inf
+        for action in actions(board):
+            v = max(v, min_value(result(board, action)))
+        return v
 
+def min_value(board):
+    if terminal(board):
+        return utility(board)
+    else:
+        v = math.inf
+        for action in actions(board):
+            v = min(v, max_value(result(board, action)))
+        return v
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
@@ -147,13 +166,10 @@ def minimax(board):
     # define the current which the result function should already do
     # list of all possible actions
     possible_actions = actions(board) # return a list of tuple
-    for action in possible_actions:
-        moves[action] = 0
     if terminal(board):
-        return 'yeah'
+        return None
     else:
-        for index, action in enumerate(possible_actions):
-            result_board = copy.deepcopy(board)
+        for action in possible_actions:
             result_board = result(result_board, action)
             if terminal(result_board):
                 moves[action] += utility(result_board)
@@ -165,4 +181,7 @@ def minimax(board):
 board = initial_state()
 check_result = terminal(board)
 num = utility(board)
+action = actions(board)
+max_score = max_value(board)
+print(max_score)
 print(check_result, num)

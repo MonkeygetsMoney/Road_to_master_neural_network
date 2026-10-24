@@ -42,6 +42,7 @@ def result(board, action):
     Returns the board that results from making move (i, j) on the board.
     """
     # action is only one move at a time
+    # make deepcopy at the result
     turn = player(board) # either X or O
     i, j = action
     board[i][j] = turn
