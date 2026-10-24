@@ -7,9 +7,9 @@ def initial_state():
     """
     Returns starting state of the board.
     """
-    return [[O, EMPTY, O],
-            [EMPTY, O, EMPTY],
-            [O, EMPTY, EMPTY]]
+    return [[EMPTY, EMPTY, EMPTY],
+            [EMPTY, X, EMPTY],
+            [EMPTY, EMPTY, EMPTY]]
 
 def player(board):
     """
@@ -36,6 +36,16 @@ def player(board):
         return X
     else:
         return O
+
+def result(board, action):
+    """
+    Returns the board that results from making move (i, j) on the board.
+    """
+    # action is only one move at a time
+    turn = player(board) # either X or O
+    i, j = action
+    board[i][j] = turn
+    return board
 
 def actions(board):
     """
@@ -103,4 +113,8 @@ board = initial_state()
 possible_actions = actions(board)
 turn = player(board)
 check_game = terminal(board)
-print(check_game)
+result_board = result(board, (0,1))
+print(result_board)
+money = []
+money[0] = 1
+print(money)

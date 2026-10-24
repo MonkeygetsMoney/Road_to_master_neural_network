@@ -3,6 +3,7 @@ Tic Tac Toe Player
 """
 
 import math
+import copy
 
 X = "X"
 O = "O"
@@ -66,6 +67,11 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
+    # action is only one move at a time
+    turn = player(board) # either X or O
+    i, j = action
+    board[i][j] = turn
+    return board
     raise NotImplementedError
 
 
@@ -137,8 +143,23 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+    moves = {}
+    # define the current which the result function should already do
+    # list of all possible actions
+    possible_actions = actions(board) # return a list of tuple
+    for action in possible_actions:
+        moves[action] = 0
     if terminal(board):
-        return None
+        return 'yeah'
+    else:
+        for index, action in enumerate(possible_actions):
+            result_board = copy.deepcopy(board)
+            result_board = result(result_board, action)
+            if terminal(result_board):
+                moves[action] += utility(result_board)
+                return moves
+            else:
+                return minimax(result_board)
     raise NotImplementedError
 
 board = initial_state()
