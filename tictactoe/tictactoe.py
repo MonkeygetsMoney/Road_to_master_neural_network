@@ -4,6 +4,7 @@ Tic Tac Toe Player
 
 import math
 import copy
+import random
 
 X = "X"
 O = "O"
@@ -14,9 +15,9 @@ def initial_state():
     """
     Returns starting state of the board.
     """
-    return [[EMPTY, EMPTY, EMPTY],
-            [EMPTY, EMPTY, EMPTY],
-            [EMPTY, EMPTY, EMPTY]]
+    return [[EMPTY, O, EMPTY],
+            [X, O, EMPTY],
+            [EMPTY, EMPTY, X]]
 
 
 def player(board):
@@ -163,25 +164,28 @@ def minimax(board):
     Returns the optimal action for the current player on the board.
     """
     moves = {}
-    # define the current which the result function should already do
-    # list of all possible actions
-    possible_actions = actions(board) # return a list of tuple
     if terminal(board):
         return None
     else:
-        for action in possible_actions:
-            result_board = result(result_board, action)
-            if terminal(result_board):
-                moves[action] += utility(result_board)
-                return moves
-            else:
-                return minimax(result_board)
+        if player(board) == X:
+            for action in actions(board):
+                score = max_value(result(board, action))
+                moves[action] = score
+            # get the max values in the dict
+            max_move = max(moves, key=moves.get)
+            return moves                
+        elif player(board) == O:
+            for action in actions(board):
+                score = max_value(result(board, action))
+                moves[action] = score
+            return moves
     raise NotImplementedError
 
 board = initial_state()
 check_result = terminal(board)
 num = utility(board)
 action = actions(board)
-max_score = max_value(board)
+max_score = minimax(board)
+print(player(board))
 print(max_score)
 print(check_result, num)
