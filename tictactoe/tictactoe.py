@@ -15,9 +15,9 @@ def initial_state():
     """
     Returns starting state of the board.
     """
-    return [[EMPTY, O, EMPTY],
-            [X, O, EMPTY],
-            [EMPTY, EMPTY, X]]
+    return [[EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY]]
 
 
 def player(board):
@@ -52,11 +52,11 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    possible_actions = []
+    possible_actions = set()
     for i in range(len(board)):
         for j in range(len(board[i])):
             if board[i][j] is EMPTY:
-                possible_actions.append((i, j))
+                possible_actions.add((i, j))
             else: continue
 
     return possible_actions
@@ -70,11 +70,18 @@ def result(board, action):
     """
     # action is only one move at a time
     # make deep copy at the result function
+    # check the current action
+    i, j = action
     result_board = copy.deepcopy(board)
     turn = player(result_board) # either X or O
-    i, j = action
-    result_board[i][j] = turn
-    return result_board
+    try:
+        result_board[i][j] = turn
+        if board[i][j] == EMPTY:
+            return result_board
+        elif board[i][j] is X or board[i][j] is O:
+            raise ValueError('Move already occupies')
+    except IndexError:
+        raise ValueError('Move out of bound')
     raise NotImplementedError
 
 
@@ -170,24 +177,22 @@ def minimax(board):
     else:
         if player(board) == X:
             for action in actions(board):
-                score = max_value(result(board, action))
-                moves[action] = score
+                maximize = max_value(result(board, action))
+                minimize = min_value(result(board, action))
+                moves[action] = minimize
             # get the max values in the dict
             max_move = max(moves, key=moves.get)
+            print(moves)
             return max_move                
         elif player(board) == O:
             for action in actions(board):
-                score = min_value(result(board, action))
-                moves[action] = score
-            min_move = min(moves, key=moves.get)
+                maximize = max_value(result(board, action))
+                minimize = min_value(result(board, action))
+                moves[action] = maximize # list all maximize scores from the move
+            min_move = min(moves, key=moves.get) # since it's minimize, will choose the lowest score
+            print(moves)
             return min_move
     raise NotImplementedError
 
 board = initial_state()
-check_result = terminal(board)
-num = utility(board)
-action = actions(board)
-max_score = minimax(board)
-print(player(board))
-print(max_score)
-print(check_result, num)
+print(result(board, (-3, 5)))
