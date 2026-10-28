@@ -9,20 +9,45 @@ BKnave = Symbol("B is a Knave")
 CKnight = Symbol("C is a Knight")
 CKnave = Symbol("C is a Knave")
 
+# note to self
 # a person can either be a knight or a knave
+# in the And, each is an individual clause 
+# (focus on try to convert sentence and what I know into conjunctive normal form)
+# don't assert the statement as a fact
+# knight tell truth, knave tell lie
+
 # Puzzle 0
 # A says "I am both a knight and a knave."
 knowledge0 = And(
+    Or(And(AKnight, Not(AKnave)), And(AKnave, Not(AKnight))),
+    Or(And(BKnight, Not(BKnave)), And(BKnave, Not(BKnight))),
+    Or(And(CKnight, Not(CKnave)), And(CKnave, Not(CKnight))),
+    Not(And(AKnight, AKnave)),
+    Not(And(BKnight, BKnave)),
+    Not(And(CKnight, CKnave)),
+    # a person can be one character
 
-    AKnight, AKnave
+    # do the statement here (enfore some rule)
+    #testing case for both character
+    Implication(AKnight, And(AKnave, AKnight))
     # TODO
 )
 
 # Puzzle 1
-# A says "We are both knaves."
+# A says "We are both knaves." And(aknave, bknave)
 # B says nothing.
 knowledge1 = And(
-    AKnave, BKnave
+    Or(And(AKnight, Not(AKnave)), And(AKnave, Not(AKnight))),
+    Or(And(BKnight, Not(BKnave)), And(BKnave, Not(BKnight))),
+    Or(And(CKnight, Not(CKnave)), And(CKnave, Not(CKnight))),
+    Not(And(AKnight, AKnave)),
+    Not(And(BKnight, BKnave)),
+    Not(And(CKnight, CKnave)),
+
+    Implication(AKnave, Not(And(AKnave, BKnave))),
+    Implication(AKnight, And(AKnave, BKnave)),
+    # think about the possibilities that each person can be and imply that role
+
     # TODO
 )
 
@@ -30,8 +55,17 @@ knowledge1 = And(
 # A says "We are the same kind."
 # B says "We are of different kinds."
 knowledge2 = And(
-    Or(And(AKnight, BKnight), And(AKnave, BKnave)),
-    Or(And(AKnight, BKnight), And(AKnave, BKnave))
+    Or(And(AKnight, Not(AKnave)), And(AKnave, Not(AKnight))),
+    Or(And(BKnight, Not(BKnave)), And(BKnave, Not(BKnight))),
+    Or(And(CKnight, Not(CKnave)), And(CKnave, Not(CKnight))),
+    Not(And(AKnight, AKnave)),
+    Not(And(BKnight, BKnave)),
+    Not(And(CKnight, CKnave)),
+
+    Implication(AKnight, Or(And(AKnight, BKnight), And(AKnave, BKnave))),
+    Implication(AKnave, Or(And(AKnave, BKnight), And(BKnave, AKnight))),
+    Implication(BKnight, Or(And(AKnave, BKnight), And(BKnave, AKnight))),
+    Implication(BKnave, Or(And(AKnight, BKnight), And(AKnave, BKnave)))
     # TODO
 )
 
@@ -41,10 +75,20 @@ knowledge2 = And(
 # B says "C is a knave."
 # C says "A is a knight."
 knowledge3 = And(
-    Or(AKnight, AKnave),
-    (AKnave),
-    (CKnave),
-    (AKnight)
+    Or(And(AKnight, Not(AKnave)), And(AKnave, Not(AKnight))),
+    Or(And(BKnight, Not(BKnave)), And(BKnave, Not(BKnight))),
+    Or(And(CKnight, Not(CKnave)), And(CKnave, Not(CKnight))),
+    Not(And(AKnight, AKnave)),
+    Not(And(BKnight, BKnave)),
+    Not(And(CKnight, CKnave)),
+
+    Implication(AKnight, Or(AKnave, AKnight)),
+    Implication(AKnave, Not(Or(AKnave, AKnight))),
+    Implication(BKnight, And(AKnave, CKnave)),
+    Implication(BKnave, Not(And(AKnave, CKnave))),
+    Implication(CKnight, AKnight),
+    Implication(CKnave, Not(AKnight))
+
     # TODO
 )
 
