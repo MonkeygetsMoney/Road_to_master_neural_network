@@ -83,10 +83,6 @@ class Minesweeper():
         """
         return self.mines_found == self.mines
 
-mines = Minesweeper()
-print(mines.print())
-print(mines.is_mine())
-
 class Sentence():
     """
     Logical statement about a Minesweeper game
@@ -115,7 +111,7 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-
+        
         raise NotImplementedError
 
     def mark_mine(self, cell):
@@ -208,3 +204,8 @@ class MinesweeperAI():
             2) are not known to be mines
         """
         raise NotImplementedError
+
+mines = Minesweeper()
+print(mines.print())
+
+#test_mines = Sentence()
