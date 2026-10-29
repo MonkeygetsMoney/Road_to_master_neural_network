@@ -83,6 +83,9 @@ class Minesweeper():
         """
         return self.mines_found == self.mines
 
+mines = Minesweeper()
+print(mines.print())
+print(mines.is_mine())
 
 class Sentence():
     """
@@ -92,8 +95,8 @@ class Sentence():
     """
 
     def __init__(self, cells, count):
-        self.cells = set(cells)
-        self.count = count
+        self.cells = set(cells) # create a set of cells
+        self.count = count # return the count of cells
 
     def __eq__(self, other):
         return self.cells == other.cells and self.count == other.count
@@ -105,13 +108,14 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        
+
         raise NotImplementedError
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
+
         raise NotImplementedError
 
     def mark_mine(self, cell):
