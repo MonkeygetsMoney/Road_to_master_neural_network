@@ -6,7 +6,7 @@ class Minesweeper():
     Minesweeper game representation
     """
 
-    def __init__(self, height=3, width=3, mines=1):
+    def __init__(self, height=8, width=8, mines=8):
 
         # Set initial width, height, and number of mines
         self.height = height
@@ -121,7 +121,7 @@ class Sentence():
         a cell is known to be a mine.
         """
         if cell in self.cells:
-            self.mine_cells.append(cell)
+            self.mine_cells.add(cell)
             self.cells -= set([cell])
             self.count -= 1
             return self.cells
@@ -135,7 +135,7 @@ class Sentence():
         a cell is known to be safe.
         """
         if cell in self.cells:
-            self.safe_cells.append(cell)
+            self.safe_cells.add(cell)
             self.cells -= set([cell]) # minus from the set
             return self.cells
         else:
@@ -155,7 +155,6 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
 
         # Keep track of which cells have been clicked on
         self.moves_made = set()
-
         # Keep track of cells known to be safe or mines
         self.mines = set()
         self.safes = set()
@@ -198,6 +197,8 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
                if they can be inferred from existing knowledge
         """
         self.moves_made.add(cell)
+        print(self.moves_made, 'this is my move')
+
         self.mark_safe(cell)
             # new_sentence = Sentence(cell, count)
             # no need for this since we will apply known mines and safes in Sentence class
@@ -217,28 +218,32 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
                     continue
 
                 if 0 <= x < self.height and 0 <= y < self.width:
-                    neighbor_cells.add(x, y)
+                    neighbor_cells.add((x, y))
 
         self.knowledge.append(Sentence(neighbor_cells, count))
 
         # to mark any additional values, access to the known_safes and known_mines in sentence class
         for i in range(len(self.knowledge)):
             for safe in self.knowledge[i].known_safes():
+                print(self.knowledge[i].known_safes(), 'safe neighbor')
                 self.mark_safe(safe)
+                #print(self.mark_safe(safe))
             for mine in self.knowledge[i].known_mines():
                 self.mark_mine(mine)
+                print(self.mark_mine(mine))
 
         for i, sentence in enumerate(self.knowledge):
             for indv_cell in self.knowledge[i].cells: # the length will keep getting shorter
-                if indv_cell in sentence:
-                    new_sentence = sentence - self.knowledge[i]
+                if indv_cell in sentence.cells:
+                    new_sentence = sentence.cells - self.knowledge[i].cells
                     if indv_cell in self.mines:
                         new_count = sentence.count - 1
-                    if new_sentence not in self.knowledge:
-                        self.knowledge.append(Sentence(new_sentence, new_count))
+                        if Sentence(new_sentence, new_count) not in self.knowledge:
+                            self.knowledge.append(Sentence(new_sentence, new_count))
 
-
-        raise NotImplementedError
+        print(self.moves_made, f'These are safe cells: {self.safes},', self.mines, 'long data!!!')
+        print(self.knowledge)
+        #raise NotImplementedError
 
     def make_safe_move(self):
         """
@@ -255,8 +260,7 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
             if safes_coord not in self.moves_made:
                 safe_moves.append(safes_coord)
             else: continue
-
-        if safe_moves:
+        if len(safe_moves) > 0:
             index = random.randint(0, len(safe_moves) - 1)
             return safe_moves[index]
         else:
@@ -271,22 +275,19 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
             2) are not known to be mines
         """
         random_move = []
+        for i in range(self.height):
+            for j in range(self.width):
+                if (i,j) in self.moves_made:
+                    continue
+                elif (i, j) in self.mines:
+                    continue
+                else:
+                    random_move.append((i,j))
+        print(random_move, 'random move')
+        index = random.randint(0, len(random_move) -1)
+        print(random_move[index])
+        return random_move[index]
 
         raise NotImplementedError
     
-cells = []
-for i in range(3):
-    for j in range(3):
-        cells.append((i, j))
 
-mine = Sentence(cells, 1)
-print(mine.cells)
-print(mine.__str__())
-
-ai = MinesweeperAI()
-set_cell = (1,1)
-mines = Minesweeper()
-cells = (0,1)
-print(mines.print())
-print(ai.add_knowledge(set_cell, 1))
-print(mine.known_safes())
