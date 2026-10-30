@@ -173,7 +173,7 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
         to mark that cell as a mine as well.
         """
         self.mines.add(cell)
-        for sentence in self.knowledge:
+        for sentence in self.knowledge: # update the location of the mines into the set
             sentence.mark_mine(cell)
 
     def mark_safe(self, cell):
@@ -183,7 +183,7 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
         """
         self.safes.add(cell)
         for sentence in self.knowledge:
-            sentence.mark_safe(cell)
+            sentence.mark_safe(cell) # a recursion
 
     def add_knowledge(self, cell, count):
         """
@@ -211,7 +211,18 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
+        safe_moves = []
         # we can use loop to through 
+        for safes_coord in self.safes:
+            if safes_coord in self.moves_made:
+                safe_moves.append(safes_coord)
+            else: continue
+
+        if safe_moves:
+            index = random.randint(0, len(safe_moves) - 1)
+            return safe_moves[index]
+        else:
+            return None
         raise NotImplementedError
 
     def make_random_move(self):
