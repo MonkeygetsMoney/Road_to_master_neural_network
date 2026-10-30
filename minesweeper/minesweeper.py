@@ -207,13 +207,13 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
 
         neighbor_cells = set()
         for x in range(cell[0] - 1, cell[0] + 2): # row
-            for y in range(cell[0] - 1, cell[0] + 2): # column
+            for y in range(cell[1] - 1, cell[1] + 2): # column
                     # set some limitations
                 if (x, y) == cell:
                     continue
-                if (x, y) in self.safes:
+                elif (x, y) in self.safes:
                     continue
-                if (x, y) in self.mines:
+                elif (x, y) in self.mines:
                     count -= 1
                     continue
 
@@ -223,26 +223,55 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
         self.knowledge.append(Sentence(neighbor_cells, count))
 
         # to mark any additional values, access to the known_safes and known_mines in sentence class
-        for i in range(len(self.knowledge)):
-            for safe in self.knowledge[i].known_safes():
-                print(self.knowledge[i].known_safes(), 'safe neighbor')
-                self.mark_safe(safe)
-                #print(self.mark_safe(safe))
-            for mine in self.knowledge[i].known_mines():
-                self.mark_mine(mine)
-                print(self.mark_mine(mine))
+        # for i in range(len(self.knowledge)):
+        #     for safe in self.knowledge[i].known_safes():
+        #         self.mark_safe(safe)
+        #         print(self.mark_safe(safe))
+        #     for mine in self.knowledge[i].known_mines():
+        #         self.mark_mine(mine)
+        #         print(self.mark_mine(mine))
 
-        for i, sentence in enumerate(self.knowledge):
-            for indv_cell in self.knowledge[i].cells: # the length will keep getting shorter
-                if indv_cell in sentence.cells:
-                    new_sentence = sentence.cells - self.knowledge[i].cells
-                    if indv_cell in self.mines:
-                        new_count = sentence.count - 1
-                        if Sentence(new_sentence, new_count) not in self.knowledge:
-                            self.knowledge.append(Sentence(new_sentence, new_count))
+        change = True
+        while change:
+            change = False
+
+            safes = set()
+            mines = set()
+
+            for sentence in self.knowledge:
+                safes = safes.union(sentence.known_safes()) # get safe cell and update every time
+                mines = mines.union(sentence.known_mines())
+
+            safes -= self.safes # keep only cells that haven't been marked
+            mines -= self.mines
+ 
+            if safes:
+                change = True
+                for safe in safes:
+                    self.mark_safe(safe)
+            if mines:
+                change = True
+                for mine in mines:
+                    self.mark_mine(mine)
+
+            for sentence1 in self.knowledge:
+                for sentence2 in self.knowledge:
+                    if sentence1.cells == sentence2.cells: 
+                        continue # ignored when they are the same
+
+                    if sentence1.cells.issubset(sentence2.cells):
+                        new_cells = sentence2.cells - sentence1.cells
+                        new_count = sentence2.count - sentence1.count
+
+                        new_sentence = Sentence(new_cells, new_count)
+
+                        if new_sentence not in self.knowledge:
+                            change = True
+                            self.knowledge.append(new_sentence)
 
         print(self.moves_made, f'These are safe cells: {self.safes},', self.mines, 'long data!!!')
-        print(self.knowledge)
+        for sentence in self.knowledge:
+            print(sentence)
         #raise NotImplementedError
 
     def make_safe_move(self):
@@ -277,13 +306,8 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
         random_move = []
         for i in range(self.height):
             for j in range(self.width):
-                if (i,j) in self.moves_made:
-                    continue
-                elif (i, j) in self.mines:
-                    continue
-                else:
+                if (i,j) not in self.moves_made and (i, j) not in self.mines:
                     random_move.append((i,j))
-        print(random_move, 'random move')
         index = random.randint(0, len(random_move) -1)
         print(random_move[index])
         return random_move[index]
