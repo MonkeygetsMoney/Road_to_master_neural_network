@@ -166,7 +166,8 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
 
         # List of sentences about the game known to be true
         self.knowledge = [] # maybe this is where the sentence implement
-
+                            # Sentence(set(), 1)
+        return self.knowledge
     def mark_mine(self, cell):
         """
         Marks a cell as a mine, and updates all knowledge
@@ -183,9 +184,9 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
         """
         self.safes.add(cell)
         for sentence in self.knowledge:
-            sentence.mark_safe(cell) # a recursion
+            sentence.mark_safe(cell) # a get mark_safe in the Sentence class
 
-    def add_knowledge(self, cell, count):
+    def add_knowledge(self, cell, count): # cell could be more than one
         """
         Called when the Minesweeper board tells us, for a given
         safe cell, how many neighboring cells have mines in them.
@@ -200,6 +201,11 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
+        set_cell = set(cell)
+        self.moves_made.add(set_cell)
+        self.safes.add(cell)
+        new_sentence = Sentence(cell, count)
+        self.knowledge.append(new_sentence)
         raise NotImplementedError
 
     def make_safe_move(self):
@@ -214,7 +220,7 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
         safe_moves = []
         # we can use loop to through 
         for safes_coord in self.safes:
-            if safes_coord in self.moves_made:
+            if safes_coord not in self.moves_made:
                 safe_moves.append(safes_coord)
             else: continue
 
@@ -232,6 +238,8 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
             1) have not already been chosen, and
             2) are not known to be mines
         """
+        random_move = []
+
         raise NotImplementedError
 
 mines = Minesweeper()
