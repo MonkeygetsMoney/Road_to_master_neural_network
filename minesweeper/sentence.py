@@ -10,7 +10,7 @@ class Sentence():
     def __init__(self, cells, count):
         self.cells = set(cells) # create a set of cells
         self.count = count # return the count of cells
-        self.safe_cells = []
+        self.safe_cells = [] #initialized lists that other methods can access
         self.mine_cells = []
 
     def __eq__(self, other):
@@ -44,6 +44,8 @@ class Sentence():
             self.cells -= set([cell])
             self.count -= 1
             return self.cells
+        else:
+            return None
         raise NotImplementedError
 
     def mark_safe(self, cell):
@@ -51,7 +53,12 @@ class Sentence():
         Updates internal knowledge representation given the fact that
         a cell is known to be safe.
         """
-
+        if cell in self.cells:
+            self.safe_cells.append(cell)
+            self.cells -= set([cell]) # minus from the set
+            return self.cells
+        else:
+            return None
         raise NotImplementedError
 
 cells = []
