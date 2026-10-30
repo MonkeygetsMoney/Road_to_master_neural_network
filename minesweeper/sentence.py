@@ -23,14 +23,14 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-
+        return set(self.mine_cells)
         raise NotImplementedError
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        
+        return set(self.safe_cells)
         raise NotImplementedError
 
     def mark_mine(self, cell):
@@ -69,4 +69,4 @@ for i in range(3):
 mines = Sentence(cells, 3)
 print(mines.cells)
 mines.mark_mine((0,1))
-print(mines.mine_cells)
+print(mines.known_mines())

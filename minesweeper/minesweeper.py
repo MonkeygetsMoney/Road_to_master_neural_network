@@ -94,6 +94,10 @@ class Sentence():
         self.cells = set(cells) # create a set of cells
         self.count = count # return the count of cells
 
+        # initialize empty sets for known_mines and known_safes
+        self.safe_cells = set()
+        self.mine_cells = set()
+
     def __eq__(self, other):
         return self.cells == other.cells and self.count == other.count
 
@@ -104,14 +108,14 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-
+        return self.mine_cells
         raise NotImplementedError
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        
+        return self.safe_cells
         raise NotImplementedError
 
     def mark_mine(self, cell):
@@ -119,6 +123,13 @@ class Sentence():
         Updates internal knowledge representation given the fact that
         a cell is known to be a mine.
         """
+        if cell in self.cells:
+            self.mine_cells.add(cell)
+            self.cells -= set([cell])
+            self.count -= 1 # remove 1 count since we are removing one mine
+            return self.cells
+        else:
+            return None
         raise NotImplementedError
 
     def mark_safe(self, cell):
@@ -126,10 +137,16 @@ class Sentence():
         Updates internal knowledge representation given the fact that
         a cell is known to be safe.
         """
+        if cell in self.cells: # check if the cell is in the current set of cells
+            self.safe_cells.add(cell) # add to the safe list if in the set of cells
+            self.cells -= set([cell])
+            return self.cells
+        else:
+            None
         raise NotImplementedError
 
 
-class MinesweeperAI():
+class MinesweeperAI(): # the class made for the AI to make its own moves
     """
     Minesweeper game player
     """
@@ -148,7 +165,7 @@ class MinesweeperAI():
         self.safes = set()
 
         # List of sentences about the game known to be true
-        self.knowledge = []
+        self.knowledge = [] # maybe this is where the sentence implement
 
     def mark_mine(self, cell):
         """
@@ -194,6 +211,7 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
+        # we can use loop to through 
         raise NotImplementedError
 
     def make_random_move(self):
