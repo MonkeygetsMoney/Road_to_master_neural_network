@@ -1,6 +1,87 @@
 # think broader, I can use class variable 
 import random
 
+class Minesweeper():
+    """
+    Minesweeper game representation
+    """
+
+    def __init__(self, height=3, width=3, mines=1):
+
+        # Set initial width, height, and number of mines
+        self.height = height
+        self.width = width
+        self.mines = set()
+
+        # Initialize an empty field with no mines
+        self.board = []
+        for i in range(self.height):
+            row = []
+            for j in range(self.width):
+                row.append(False)
+            self.board.append(row)
+
+        # Add mines randomly
+        while len(self.mines) != mines:
+            i = random.randrange(height)
+            j = random.randrange(width)
+            if not self.board[i][j]:
+                self.mines.add((i, j))
+                self.board[i][j] = True
+
+        # At first, player has found no mines
+        self.mines_found = set()
+
+    def print(self):
+        """
+        Prints a text-based representation
+        of where mines are located.
+        """
+        for i in range(self.height):
+            print("--" * self.width + "-")
+            for j in range(self.width):
+                if self.board[i][j]:
+                    print("|X", end="")
+                else:
+                    print("| ", end="")
+            print("|")
+        print("--" * self.width + "-")
+
+    def is_mine(self, cell):
+        i, j = cell
+        return self.board[i][j] # return either true or false established up in the initialized
+
+    def nearby_mines(self, cell):
+        """
+        Returns the number of mines that are
+        within one row and column of a given cell,
+        not including the cell itself.
+        """
+
+        # Keep count of nearby mines
+        count = 0 # show the number of neighbor cells
+
+        # Loop over all cells within one row and column
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
+
+                # Ignore the cell itself
+                if (i, j) == cell:
+                    continue
+
+                # Update count if cell in bounds and is mine
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    if self.board[i][j]:
+                        count += 1
+
+        return count
+
+    def won(self):
+        """
+        Checks if all mines have been flagged.
+        """
+        return self.mines_found == self.mines
+    
 class Sentence():
     """
     Logical statement about a Minesweeper game
@@ -117,26 +198,41 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        if cell not in self.moves_made or cell not in self.safes:
-            set_cell = set(cell)
-            self.moves_made.update(set_cell)
+        if cell not in self.moves_made and cell not in self.safes:
+            self.moves_made.add(cell)
             self.mark_safe(cell)
-            new_sentence = Sentence(cell, count)
-            self.knowledge.append(new_sentence)
+            # new_sentence = Sentence(cell, count)
+            # no need for this since we will apply known mines and safes in Sentence class
 
             i, j = cell
             neighbor_cells = []
-            if sentence.count > 0:
-                for x in range(-1,self.width-1):
-                    for y in range(-1,self.height-1):
+            if count > 0:
+                for x in range(-1,2):
+                    for y in range(-1,2):
+                        coord = (i+x, j+y)
+                        neighbor_cells.append(coord)
+            else:
+                for x in range(-1,2):
+                    for y in range(-1,2):
                         coord = (i+x, j+y)
                         neighbor_cells.append(coord)
 
-                neighbor_sentence = Sentence(neighbor_cells, count)
-                self.knowledge.append(neighbor_sentence)
+            neighbor_sentence = Sentence(neighbor_cells, count)
+            self.knowledge.append(neighbor_sentence)
 
-            for sentence in self.add_knowledge:
+            for sentence in self.knowledge:
                 # if count is one, then all the surrounding is 1 or possibly a mine
+                for index in range(1, self.knowledge+1):
+                    if sentence.__eq__(self.knowledge[index]):
+                        self.knowledge.remove(self.knowledge[index])
+                    else:
+                        # loop through every cell and see if it's in the next sentence
+                        for indv_cell in sentence.cells:
+                            if indv_cell in self.knowledge[index].cells:
+                                self.knowledge[index].cells.difference_update(indv_cell)
+                                if indv_cell not in self.safes or indv_cell not in sentence.known_mines():
+                                    self.knowledge[index].count -= 1
+
         raise NotImplementedError
 
     def make_safe_move(self):
@@ -178,11 +274,14 @@ for i in range(3):
     for j in range(3):
         cells.append((i, j))
 
-mines = Sentence(cells, 3)
-print(mines.cells)
-mines.mark_mine((0,1))
-print(mines.known_mines())
-print(mines.__str__())
+mine = Sentence(cells, 1)
+print(mine.cells)
+print(mine.__str__())
 
 ai = MinesweeperAI()
-set_cell = [(0,1), (0,0), (1,1)]
+set_cell = (1,1)
+mines = Minesweeper()
+cells = (0,1)
+print(mines.print())
+print(ai.add_knowledge(set_cell, 1))
+print(mine.known_safes())
