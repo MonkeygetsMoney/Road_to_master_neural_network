@@ -165,6 +165,8 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
         self.knowledge = [] # maybe this is where the sentence implement
                             # Sentence(set(), 1)
 
+    # mark mine and safe will mark the cells and remove from the sentence in the knowledge base
+    # reduce the sentence base smaller and smaller
     def mark_mine(self, cell):
         """
         Marks a cell as a mine, and updates all knowledge
@@ -259,6 +261,7 @@ class MinesweeperAI(): # the class made for the AI to make its own moves
             empty = Sentence(set(), 0)
             self.knowledge[:] = [x for x in self.knowledge if x != empty]
 
+            # here is where we can make our inference after the sentences are all reduce
             for sentence1 in self.knowledge:
                 for sentence2 in self.knowledge:
                     if sentence1.cells == sentence2.cells: 
