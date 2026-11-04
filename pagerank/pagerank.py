@@ -20,6 +20,9 @@ def main():
     # print(f"PageRank Results from Iteration")
     # for page in sorted(ranks):
     #     print(f"  {page}: {ranks[page]:.4f}")
+    model = transition_model(corpus, '3.html', DAMPING)
+    print(model)
+
 
 
 def crawl(directory):
@@ -58,9 +61,31 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
-    
-    raise NotImplementedError
+    # corpus in this case is a dictionary
+    # if 1 - damping: the probability would be divide among all the pages
+    # if damping: the probability divide among links in that page
 
+    # create a new dict of values
+    distribution = {}
+    for value in corpus:
+        distribution[value] = 0
+
+    if random.random() < damping_factor: 
+        # do the values first, then the all of the pages
+        links = corpus[page]
+        links_value = damping_factor / len(links)
+        pages_value = (1-damping_factor) / len(distribution)
+        for key in distribution:
+            if key in links: # if the key is one of the links, we add both probability
+                distribution[key] += links_value + pages_value
+            else:
+                distribution[key] += pages_value
+    else:
+        for key in distribution:
+            distribution[key] += 1/len(distribution)
+            
+    return distribution
+    raise NotImplementedError
 
 def sample_pagerank(corpus, damping_factor, n):
     """
