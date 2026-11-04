@@ -12,16 +12,17 @@ def main():
         sys.exit("Usage: python pagerank.py corpus")
     corpus = crawl(sys.argv[1])
     print(corpus)
-    # ranks = sample_pagerank(corpus, DAMPING, SAMPLES)
-    # print(f"PageRank Results from Sampling (n = {SAMPLES})")
-    # for page in sorted(ranks):
-    #     print(f"  {page}: {ranks[page]:.4f}")
+    ranks = sample_pagerank(corpus, DAMPING, SAMPLES)
+    print(f"PageRank Results from Sampling (n = {SAMPLES})")
+    for page in sorted(ranks):
+        print(f"  {page}: {ranks[page]:.4f}")
     # ranks = iterate_pagerank(corpus, DAMPING)
     # print(f"PageRank Results from Iteration")
     # for page in sorted(ranks):
     #     print(f"  {page}: {ranks[page]:.4f}")
     model = transition_model(corpus, '3.html', DAMPING)
-    print(model)
+    print(ranks)
+
 
 
 
@@ -83,7 +84,7 @@ def transition_model(corpus, page, damping_factor):
     else:
         for key in distribution:
             distribution[key] += 1/len(distribution)
-            
+
     return distribution
     raise NotImplementedError
 
@@ -96,6 +97,36 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
+    # set up dict to record count
+    count = {}
+    for i in corpus:
+        count[i] = 0
+    # corpus is a dict passed in
+    # random at first start
+    page = random.choice(list(corpus.keys()))
+
+    for i in range(n):
+            count[page] += 1 # keep track of page visit
+            # now we have a probability distribution we can choose the each page in the corpus based on that
+            distribution = transition_model(corpus, page, damping_factor)
+
+            values = []
+            probability = []
+            for value in distribution:
+                values.append(value)
+                probability.append(distribution[value])
+
+            # we can use random.choice
+            page = random.choices(values, weights=probability, k=1)[0]
+
+    total = 0
+    value = list(count.values())
+    for i in value:
+        total += i
+    for index, item in enumerate(count):
+        count[item] = value[index]/total
+
+    return count
     raise NotImplementedError
 
 
