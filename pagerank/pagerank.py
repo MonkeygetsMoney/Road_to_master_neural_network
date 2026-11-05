@@ -2,6 +2,7 @@ import os
 import random
 import re
 import sys
+import copy
 
 DAMPING = 0.85
 SAMPLES = 10000
@@ -16,15 +17,10 @@ def main():
     print(f"PageRank Results from Sampling (n = {SAMPLES})")
     for page in sorted(ranks):
         print(f"  {page}: {ranks[page]:.4f}")
-    # ranks = iterate_pagerank(corpus, DAMPING)
-    # print(f"PageRank Results from Iteration")
-    # for page in sorted(ranks):
-    #     print(f"  {page}: {ranks[page]:.4f}")
-    model = transition_model(corpus, '3.html', DAMPING)
-    print(ranks)
-
-
-
+    ranks = iterate_pagerank(corpus, DAMPING)
+    print(f"PageRank Results from Iteration")
+    for page in sorted(ranks):
+        print(f"  {page}: {ranks[page]:.4f}")
 
 def crawl(directory):
     """
@@ -74,7 +70,7 @@ def transition_model(corpus, page, damping_factor):
     if random.random() < damping_factor: 
         # do the values first, then the all of the pages
         links = corpus[page]
-        if links is None:
+        if not links:
             links_value = damping_factor/len(distribution) # all links of the corpus have the same probability
         else:
             links_value = damping_factor / len(links)
@@ -143,6 +139,53 @@ def iterate_pagerank(corpus, damping_factor):
     PageRank values should sum to 1.
     """
 
+    # page = random.choice(list(corpus.keys())) # choose random at first
+    # use the formula for every single page
+
+    distribution = {} # keep track of the distribution
+    new_distribution = {}
+    for i in corpus:
+        distribution[i] = 1/len(corpus) # assign equal probability for all pages at first
+
+    # at the beginning, we update the old distribution
+    count = 0
+    difference = True # run until tolerance lower than 0.001
+    while difference:
+        if count != 0: # if this is not the first start, update the first distribution
+            distribution = copy.copy(new_distribution)
+
+        for page in distribution:
+            # this is the link to the specific page
+            link_page = [] # restart every cycle
+            for i in corpus:
+                if page in corpus[i]:
+                    link_page.append(i)
+            PRlink = 0
+            if not link_page:
+                PRlink = 0
+            else:
+                for i in link_page: 
+                    # find the probability of that page / the number of links on that page
+                    if not corpus[i]:
+                        PRlink += distribution[i] / len(distribution)
+                    else:
+                        PRlink += distribution[i] / len(corpus[i])
+                PRlink *= damping_factor
+
+            new_distribution[page] = (1-damping_factor)/len(distribution) + PRlink # update the new distribution
+
+        number = 0 # keep track of how many difference is below TOL
+        for i in new_distribution: # find the difference between old and new distribution
+            if new_distribution[i] - distribution[i] < abs(0.001):
+                number += 1
+            else:
+                continue
+        if number == len(new_distribution): # all probability don't change more then the threshold
+            difference = False
+        else:
+            count += 1
+
+    return new_distribution
     raise NotImplementedError
 
 
