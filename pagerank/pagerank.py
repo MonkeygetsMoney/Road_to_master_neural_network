@@ -74,7 +74,10 @@ def transition_model(corpus, page, damping_factor):
     if random.random() < damping_factor: 
         # do the values first, then the all of the pages
         links = corpus[page]
-        links_value = damping_factor / len(links)
+        if links is None:
+            links_value = damping_factor/len(distribution) # all links of the corpus have the same probability
+        else:
+            links_value = damping_factor / len(links)
         pages_value = (1-damping_factor) / len(distribution)
         for key in distribution:
             if key in links: # if the key is one of the links, we add both probability
@@ -139,6 +142,7 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
+
     raise NotImplementedError
 
 
