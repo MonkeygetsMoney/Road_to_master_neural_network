@@ -97,8 +97,8 @@ def main():
     for person in people:
         print(people[person]['mother'])
 
-    joint_probability(people, {'Harry'}, {'James'}, {'James'})
-
+    joint = joint_probability(people, {'Harry'}, {'James'}, {'James'})
+    print(joint)
 
 def load_data(filename):
     """
@@ -185,7 +185,7 @@ def joint_probability(people, one_gene, two_genes, have_trait):
             total = trait_prob * gene_prob
 
             # include probability of gene and trait to be use for the child
-            person_prob[parent] = [total, copies, trait_prob] 
+            person_prob[parent] = [total, copies] 
 
     for child in people:    
         # get gene probability
@@ -220,15 +220,26 @@ def joint_probability(people, one_gene, two_genes, have_trait):
                 # one from the mom and not the dad
                 # one from the dad and not the mom
                 copies = 1
-                gene_prob = gene_dict[mom_copies]['Happen'] * gene_dict[mom_copies]['Not happen'] + gene_dict[dad_copies]['Happen'] * gene_dict[dad_copies]['Not happen']
+                gene_prob = gene_dict[mom_copies]['Happen'] * gene_dict[dad_copies]['Not happen'] + gene_dict[dad_copies]['Happen'] * gene_dict[mom_copies]['Not happen']
 
             if child in two_genes:
                 copies = 2
                 gene_prob = gene_dict[mom_copies]['Happen'] * gene_dict[dad_copies]['Happen']
 
-            person_prob[child] = [copies, gene_prob]
+            # get the child trait, if he had one
+            if child not in have_trait:
+                trait_prob = PROBS['trait'][copies][False]
 
-    return print(person_prob)
+            if child in have_trait:
+                trait_prob = PROBS['trait'][copies][True]
+
+            total = gene_prob * trait_prob
+            person_prob[child] = [total, copies]
+
+    joint = 1
+    for person in person_prob:
+        joint *= person_prob[person][0]
+    return joint
 
     raise NotImplementedError
 
