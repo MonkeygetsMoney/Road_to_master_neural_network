@@ -145,7 +145,90 @@ def joint_probability(people, one_gene, two_genes, have_trait):
         * everyone in set `have_trait` has the trait, and
         * everyone not in set` have_trait` does not have the trait.
     """
+    # set up the function so it can be used by the main function
+    # just think about how to make it work instead of how do we use it
+    # 
+    #  every argument can have one or more people
 
+    # probability of all the people
+    # use dict to identify the parents and child
+    person_prob = {}
+
+    for parent in people:
+        # do it for the parent first
+        # check the person is the parent or the child (mutation only happens in the child)
+        if people[parent]['mother'] == None and people[parent]['father'] == None:
+            # get gene and trait based on condition
+
+            # get gene probability
+            if parent not in one_gene and parent not in two_genes:
+                copies = 0
+                gene_prob = PROBS['gene'][copies]
+
+            # assume that the person in one gene and not the other
+            if parent in one_gene:
+                copies = 1
+                gene_prob = PROBS['gene'][copies]
+
+            if parent in two_genes:
+                copies = 2
+                gene_prob = PROBS['gene'][copies]
+
+
+            # get trait probability
+            if parent not in have_trait:
+                trait_prob = PROBS['trait'][copies][False]
+
+            if parent in have_trait:
+                trait_prob = PROBS['trait'][copies][True]
+
+            total = trait_prob * gene_prob
+
+            # include probability of gene and trait to be use for the child
+            person_prob[parent] = [total, copies, trait_prob] 
+
+    for child in people:    
+        # get gene probability
+        # check the probability the child have 0, 1, or 2 copies
+        ''' 
+        if parent has:
+        2 copies is 0.99 with mutation
+        1 copy is 0.5 with mutation
+        0 copy is 0.01 with mutation
+        '''
+        if people[child]['mother'] and people[child]['father']:
+            # if the person parents existed
+            gene_dict = {
+                0: {'Happen': PROBS['mutation'], 'Not happen': 1 - PROBS['mutation']},
+                1: {'Happen': 0.5,  'Not happen': 0.5},
+                2: {'Happen': 1 - PROBS['mutation'], 'Not happen': PROBS['mutation']}
+            }
+            # number of copies from the parents
+            mother = people[child]['mother'] # name of the mom
+            father = people[child]['father'] # name of the dad
+
+            mom_copies = person_prob[mother][1] # second index is the copies
+            dad_copies = person_prob[father][1]
+
+            if child not in one_gene and child not in two_genes:
+                # one scenario is that both cannot pass on the gene
+                copies = 0
+                gene_prob = gene_dict[mom_copies]['Not happen'] * gene_dict[dad_copies]['Not happen']
+
+            if child in one_gene:
+                # two scenarios
+                # one from the mom and not the dad
+                # one from the dad and not the mom
+                copies = 1
+                gene_prob = gene_dict[mom_copies]['Happen'] * gene_dict[mom_copies]['Not happen'] + gene_dict[dad_copies]['Happen'] * gene_dict[dad_copies]['Not happen']
+
+            if child in two_genes:
+                copies = 2
+                gene_prob = gene_dict[mom_copies]['Happen'] * gene_dict[dad_copies]['Happen']
+
+            person_prob[child] = [copies, gene_prob]
+
+    return print(person_prob)
 
     raise NotImplementedError
 
