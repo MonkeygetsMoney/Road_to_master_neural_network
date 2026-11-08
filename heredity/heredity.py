@@ -62,37 +62,37 @@ def main():
     }
 
     # Loop over all sets of people who might have the trait
-    # names = set(people)
-    # for have_trait in powerset(names):
+    names = set(people)
+    for have_trait in powerset(names):
 
-    #     # Check if current set of people violates known information
-    #     fails_evidence = any(
-    #         (people[person]["trait"] is not None and
-    #          people[person]["trait"] != (person in have_trait))
-    #         for person in names
-    #     )
-    #     if fails_evidence:
-    #         continue
+        # Check if current set of people violates known information
+        fails_evidence = any(
+            (people[person]["trait"] is not None and
+             people[person]["trait"] != (person in have_trait))
+            for person in names
+        )
+        if fails_evidence:
+            continue
 
-    #     # Loop over all sets of people who might have the gene
-    #     for one_gene in powerset(names):
-    #         for two_genes in powerset(names - one_gene):
+        # Loop over all sets of people who might have the gene
+        for one_gene in powerset(names):
+            for two_genes in powerset(names - one_gene):
 
-    #             # Update probabilities with new joint probability
-    #             p = joint_probability(people, one_gene, two_genes, have_trait)
-    #             update(probabilities, one_gene, two_genes, have_trait, p)
+                # Update probabilities with new joint probability
+                p = joint_probability(people, one_gene, two_genes, have_trait)
+                update(probabilities, one_gene, two_genes, have_trait, p)
 
     # # Ensure probabilities sum to 1
-    # normalize(probabilities)
+    normalize(probabilities)
 
-    # # Print results
-    # for person in people:
-    #     print(f"{person}:")
-    #     for field in probabilities[person]:
-    #         print(f"  {field.capitalize()}:")
-    #         for value in probabilities[person][field]:
-    #             p = probabilities[person][field][value]
-    #             print(f"    {value}: {p:.4f}")
+    # Print results
+    for person in people:
+        print(f"{person}:")
+        for field in probabilities[person]:
+            print(f"  {field.capitalize()}:")
+            for value in probabilities[person][field]:
+                p = probabilities[person][field][value]
+                print(f"    {value}: {p:.4f}")
 
     for person in people:
         print(people[person]['mother'])
@@ -100,8 +100,6 @@ def main():
     joint = joint_probability(people, {'Harry'}, {'James'}, {'James'})
     print(joint)
 
-    for person in probabilities:
-        print(person, probabilities[person]['gene'])
 def load_data(filename):
     """
     Load gene and trait data from a file into a dictionary.
@@ -284,7 +282,38 @@ def normalize(probabilities):
     Update `probabilities` such that each probability distribution
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
-    raise NotImplementedError
+    # to normalize the distribution, add up all the value in that variable
+    # then divide each value by the total, to get the ratio
+
+    for person in probabilities:
+
+        # total value of gene
+        gene_total = 0
+
+        # total value of trait
+        trait_total = 0
+
+        # current value for that copies of gene
+        gene_prob = []
+
+        # current value for trait
+        trait_prob = []
+
+        for gene in probabilities[person]['gene']:
+            gene_value = probabilities[person]['gene'][gene]
+            gene_total += gene_value
+            gene_prob.append([gene,gene_value])
+
+        for trait in probabilities[person]['trait']:
+            trait_value = probabilities[person]['trait'][trait]
+            trait_total += trait_value
+            trait_prob.append([trait,trait_value])
+
+        for gene, gene_value in gene_prob:
+            probabilities[person]['gene'][gene] = gene_value/gene_total
+
+        for trait, trait_value in trait_prob:
+            probabilities[person]['trait'][trait] = trait_value/trait_total
 
 
 if __name__ == "__main__":
