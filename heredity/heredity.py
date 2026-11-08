@@ -100,6 +100,8 @@ def main():
     joint = joint_probability(people, {'Harry'}, {'James'}, {'James'})
     print(joint)
 
+    for person in probabilities:
+        print(person, probabilities[person]['gene'])
 def load_data(filename):
     """
     Load gene and trait data from a file into a dictionary.
@@ -251,8 +253,31 @@ def update(probabilities, one_gene, two_genes, have_trait, p):
     Which value for each distribution is updated depends on whether
     the person is in `have_gene` and `have_trait`, respectively.
     """
-    raise NotImplementedError
 
+    # p value acts as accumulate, adding the joint probability for all possible scenarios
+    # we then can find the ratio from there
+
+    for person in probabilities:
+
+        # add joint probability to appropriate gene copies
+        if person not in one_gene and person not in two_genes:
+            copies = 0
+            probabilities[person]['gene'][copies] += p
+
+        if person in one_gene:
+            copies = 1
+            probabilities[person]['gene'][copies] += p
+
+        if person in two_genes:
+            copies = 2
+            probabilities[person]['gene'][copies] += p
+
+        # add joint probability to appropriate trait
+        if person not in have_trait:
+            probabilities[person]['trait'][False] += p
+
+        if person in have_trait:
+            probabilities[person]['trait'][True] += p
 
 def normalize(probabilities):
     """
