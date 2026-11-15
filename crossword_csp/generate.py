@@ -204,7 +204,8 @@ class CrosswordCreator():
         Return True if `assignment` is complete (i.e., assigns a value to each
         crossword variable); return False otherwise.
         """
-        for variable in self.crossword.variables:
+        for variable in self.crossword.variables: 
+            # check if all variables are in assignment
             if variable in assignment:
                 if assignment[variable] is not None:
                     continue
@@ -220,6 +221,25 @@ class CrosswordCreator():
         Return True if `assignment` is consistent (i.e., words fit in crossword
         puzzle without conflicting characters); return False otherwise.
         """
+
+        for variable in assignment:
+            length = variable.length # length of that word
+            if len(assignment[variable]) != length:
+                return False
+
+            # find the neighbor of the current variable
+            neighbors = self.crossword.neighbors(variable)
+            for neighbor in neighbors:
+                # get the overlap index
+                index = self.crossword.overlaps[variable][neighbor]
+
+                if assignment[variable][index[0]] == assignment[neighbor][index[1]]:
+                    continue
+                else:
+                    return False
+
+        return True
+        
         raise NotImplementedError
 
     def order_domain_values(self, var, assignment):
