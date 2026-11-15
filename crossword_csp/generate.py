@@ -204,6 +204,15 @@ class CrosswordCreator():
         Return True if `assignment` is complete (i.e., assigns a value to each
         crossword variable); return False otherwise.
         """
+        for variable in self.crossword.variables:
+            if variable in assignment:
+                if assignment[variable] is not None:
+                    continue
+
+            else:
+                return False
+
+        return True
         raise NotImplementedError
 
     def consistent(self, assignment):
@@ -283,8 +292,7 @@ def main():
     #     print(creator.crossword.neighbors(i))
     #     for j in creator.crossword.neighbors(i):
     #         print((i, j))
-    print(creator.ac3(arcs=(Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6))))
-    
+    print(creator.crossword.variables)
     # for i in creator.domains:
     #     print(type(i.length)) # since
 
