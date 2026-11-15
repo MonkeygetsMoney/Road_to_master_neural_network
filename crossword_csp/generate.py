@@ -118,7 +118,8 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        overlap = self.crossword.overlaps[x, y] # return either the coordinate (x, y) or None
+        overlap = self.crossword.overlaps[x, y] 
+        # return either the coordinate (x, y) or None
 
         if overlap is None:
             return False
@@ -252,6 +253,23 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
+        # loop over all neighbor
+        neighbors = self.crossword.neighbors(var)
+        words = {}
+        for word1 in self.domains[var]:
+            words[word1] = 0
+            for neighbor in neighbors:
+                index = self.crossword.overlaps[var, neighbor]
+                # return overlap coordinate
+
+                for word2 in self.domains[neighbor]:
+                    if word1[index[0]] == word2[index[1]]:
+                        words[word1] += 1
+ 
+        sorted(words, key=words.get, reverse=True)
+
+        return[i for i in words]
+
         raise NotImplementedError
 
     def select_unassigned_variable(self, assignment):
@@ -318,6 +336,7 @@ def main():
     print(creator.crossword.variables)
     # for i in creator.domains:
     #     print(type(i.length)) # since
+
 
 if __name__ == "__main__":
     main()
