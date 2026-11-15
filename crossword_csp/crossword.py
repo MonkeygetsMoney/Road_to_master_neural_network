@@ -84,7 +84,8 @@ class Crossword():
                         self.variables.add(Variable(
                             i=i, j=j,
                             direction=Variable.DOWN,
-                            length=length
+                            length=length # this indicate the number of leter in the word
+                                          # add to the class variable
                         ))
 
                 # Horizontal words

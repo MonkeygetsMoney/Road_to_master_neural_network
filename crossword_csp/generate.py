@@ -118,6 +118,29 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
+        overlap = self.crossword.overlaps[x, y] # return either the coordinate (x, y) or None
+        x_index = overlap[0]
+        y_index = overlap[1]
+
+        x_length = len(self.domains[x]) # original number of word in x variable
+        print(self.domains[x])
+
+        for x_word in self.domains[x].copy():
+            flag = False
+            for y_word in self.domains[y]:
+                if x_word[x_index] == y_word[y_index]:
+                    flag = True
+
+            if flag:
+                continue
+            else:
+                self.domains[x].remove(x_word)
+
+        if len(self.domains[x]) != x_length:
+            print(self.domains[x])
+            return True
+        else:
+            return False
         raise NotImplementedError
 
     def ac3(self, arcs=None):
@@ -206,10 +229,13 @@ def main():
                                 # this is an access to the class
     # print(crossword.words)
     # print(crossword.overlaps)
-    for i in creator.domains:
-        print(i, creator.domains[i], len(creator.domains[i]))
+    # for i in creator.domains:
+    #     print(i, creator.domains[i], len(creator.domains[i]))
     print(creator.enforce_node_consistency())
     print(creator.domains)
+    print(creator.crossword.overlaps[Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)])
+    print(creator.revise(Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)))
+    
     # for i in creator.domains:
     #     print(type(i.length)) # since
 
