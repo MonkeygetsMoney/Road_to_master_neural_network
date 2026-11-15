@@ -10,7 +10,7 @@ class CrosswordCreator():
         Create new CSP crossword generate.
         """
         self.crossword = crossword
-        self.domains = { # 
+        self.domains = { # key is variable and value is all the word those variable will take on
             var: self.crossword.words.copy()
             for var in self.crossword.variables
         }
@@ -119,28 +119,30 @@ class CrosswordCreator():
         False if no revision was made.
         """
         overlap = self.crossword.overlaps[x, y] # return either the coordinate (x, y) or None
-        x_index = overlap[0]
-        y_index = overlap[1]
 
-        x_length = len(self.domains[x]) # original number of word in x variable
-        print(self.domains[x])
-
-        for x_word in self.domains[x].copy():
-            flag = False
-            for y_word in self.domains[y]:
-                if x_word[x_index] == y_word[y_index]:
-                    flag = True
-
-            if flag:
-                continue
-            else:
-                self.domains[x].remove(x_word)
-
-        if len(self.domains[x]) != x_length:
-            print(self.domains[x])
-            return True
-        else:
+        if overlap is None:
             return False
+        else:
+            x_index = overlap[0]
+            y_index = overlap[1]
+
+            x_length = len(self.domains[x]) # original number of word in x variable
+
+            for x_word in self.domains[x].copy():
+                flag = False # flag check to see if there's a match
+                for y_word in self.domains[y]:
+                    if x_word[x_index] == y_word[y_index]:
+                        flag = True
+
+                if flag:
+                    continue
+                else:
+                    self.domains[x].remove(x_word)
+
+            if len(self.domains[x]) != x_length:
+                return True
+            else:
+                return False
         raise NotImplementedError
 
     def ac3(self, arcs=None):
@@ -152,6 +154,44 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
+        # an arc argument can look like this (X, Y)
+        # for the function to called arc consistency
+        # it mean that every word for variable X has one compatiable letter for variable Y
+        # if a word is not compatible, the word would get removed from that variable
+
+        queue = [] # add ordered pair
+        if arcs is None:
+            for x in self.domains:
+                for y in self.crossword.neighbors(x):
+                    queue.append((x,y))
+
+            while queue is not None:
+                x, y = queue.pop() # always the last item 
+                                   # decrease overtime
+                if self.revise(x, y):
+                    if self.domains[x] == 0: # if altered the domains of x come out to 0
+                                             # basically no match
+                        return False
+                    
+                    for z in (self.crossword.neighbors(x) - y):
+                        queue.append((z, x))
+
+            return True
+
+        else:
+            queue.append(arcs)
+
+            while queue is not None:
+                x, y = queue.pop()
+                if self.revise(x, y):
+
+                    if self.domains[x] == 0:
+                        return False
+
+                    for z in (self.crossword.neighbors(x) - y):
+                        queue.append((z, x))
+
+            return True
         raise NotImplementedError
 
     def assignment_complete(self, assignment):
@@ -232,9 +272,11 @@ def main():
     # for i in creator.domains:
     #     print(i, creator.domains[i], len(creator.domains[i]))
     print(creator.enforce_node_consistency())
-    print(creator.domains)
     print(creator.crossword.overlaps[Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)])
     print(creator.revise(Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)))
+    for i in creator.domains:
+        print(i, creator.crossword.neighbors(i))
+    print(creator.ac3())
     
     # for i in creator.domains:
     #     print(type(i.length)) # since
