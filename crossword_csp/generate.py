@@ -159,39 +159,44 @@ class CrosswordCreator():
         # it mean that every word for variable X has one compatiable letter for variable Y
         # if a word is not compatible, the word would get removed from that variable
 
-        queue = [] # add ordered pair
         if arcs is None:
+            self.queue = [] # add ordered pair
+
             for x in self.domains:
                 for y in self.crossword.neighbors(x):
-                    queue.append((x,y))
+                    self.queue.append((x,y))
 
-            while queue is not None:
-                x, y = queue.pop() # always the last item 
+            print(self.queue)
+
+            while self.queue != []:
+                x, y = self.queue.pop() # always the last item 
                                    # decrease overtime
                 if self.revise(x, y):
-                    if self.domains[x] == 0: # if altered the domains of x come out to 0
+                    if len(self.domains[x]) == 0: # if altered the domains of x come out to 0
                                              # basically no match
                         return False
                     
-                    for z in (self.crossword.neighbors(x) - y):
-                        queue.append((z, x))
+                    for z in (self.crossword.neighbors(x) - {y}):
+                        self.queue.append((z, x))
 
             return True
 
         else:
-            queue.append(arcs)
+            if arcs == []: # when arcs is an empty list
+                return None
+            else:
+                self.queue = arcs
+                while self.queue != []:
+                    x, y = self.queue.pop()
+                    if self.revise(x, y):
 
-            while queue is not None:
-                x, y = queue.pop()
-                if self.revise(x, y):
+                        if len(self.domains[x]) == 0:
+                            return False
 
-                    if self.domains[x] == 0:
-                        return False
+                        for z in (self.crossword.neighbors(x) - {y}):
+                            self.queue.append((z, x))
 
-                    for z in (self.crossword.neighbors(x) - y):
-                        queue.append((z, x))
-
-            return True
+                return True
         raise NotImplementedError
 
     def assignment_complete(self, assignment):
@@ -273,10 +278,12 @@ def main():
     #     print(i, creator.domains[i], len(creator.domains[i]))
     print(creator.enforce_node_consistency())
     print(creator.crossword.overlaps[Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)])
-    print(creator.revise(Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)))
-    for i in creator.domains:
-        print(i, creator.crossword.neighbors(i))
-    print(creator.ac3())
+    # print(creator.revise(Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)))
+    # for i in creator.domains:
+    #     print(creator.crossword.neighbors(i))
+    #     for j in creator.crossword.neighbors(i):
+    #         print((i, j))
+    print(creator.ac3(arcs=(Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6))))
     
     # for i in creator.domains:
     #     print(type(i.length)) # since
