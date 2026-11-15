@@ -231,12 +231,15 @@ class CrosswordCreator():
             neighbors = self.crossword.neighbors(variable)
             for neighbor in neighbors:
                 # get the overlap index
-                index = self.crossword.overlaps[variable][neighbor]
+                index = self.crossword.overlaps[variable, neighbor]
 
-                if assignment[variable][index[0]] == assignment[neighbor][index[1]]:
-                    continue
-                else:
-                    return False
+                # check if the nieghbor is present in the assignment
+                if neighbor in assignment:
+
+                    if assignment[variable][index[0]] == assignment[neighbor][index[1]]:
+                        continue
+                    else:
+                        return False
 
         return True
         
