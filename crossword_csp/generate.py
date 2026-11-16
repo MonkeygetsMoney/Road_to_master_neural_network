@@ -1,5 +1,5 @@
 import sys
-
+import math
 from crossword import *
 
 
@@ -280,16 +280,29 @@ class CrosswordCreator():
         return values.
         """
         unassign = {}
-        current = None
+        # the current to check the length of value in the domain a variable
+        current = (None, math.inf)
         for variable in self.domains:
+
             if variable not in assignment:
                 unassign[variable] = len(self.domains[variable])
+
+                # set variable to current if less than the current
+                if len(self.domains[variable]) < current[1]:
+                    current = (variable, len(self.domains[variable]))
+
+                # if equal, then check the number of neighbor
+                if len(self.domains[variable]) == current[1]:
+
+                    # if number of neighbor in current variable is bigger, then set equal to
+                    if len(self.crossword.neighbors(variable)) > len(self.crossword.neighbors(current[0])):
+                        current = (variable, len(self.domains[variable]))
 
         unassign = sorted(unassign, key=unassign.get)
         unassign_list = [var for var in unassign]
 
         # reutrn the first index, which is the fewest in its domain
-        return unassign_list[0]
+        return current[0]
         raise NotImplementedError
 
     def backtrack(self, assignment):
@@ -339,10 +352,10 @@ def main():
     print(creator.enforce_node_consistency())
     print(creator.crossword.overlaps[Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)])
     # print(creator.revise(Variable(1, 7, 'down', 7), Variable(6, 5, 'across', 6)))
-    # for i in creator.domains:
-    #     print(creator.crossword.neighbors(i))
-    #     for j in creator.crossword.neighbors(i):
-    #         print((i, j))
+    for i in creator.domains:
+        print(creator.crossword.neighbors(i))
+        for j in creator.crossword.neighbors(i):
+            print((i, j))
     print(creator.crossword.variables)
     for i in creator.domains:
         print(len(creator.domains[i]))
