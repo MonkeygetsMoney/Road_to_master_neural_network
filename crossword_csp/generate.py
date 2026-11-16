@@ -265,10 +265,9 @@ class CrosswordCreator():
                 for word2 in self.domains[neighbor]:
                     if word1[index[0]] == word2[index[1]]:
                         words[word1] += 1
- 
-        sorted(words, key=words.get, reverse=True)
 
-        return[i for i in words]
+        # sorted in ascending order of n, biggest ot smallest
+        return sorted(words, key=words.get, reverse=True)
 
         raise NotImplementedError
 
@@ -280,6 +279,17 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
+        unassign = {}
+        current = None
+        for variable in self.domains:
+            if variable not in assignment:
+                unassign[variable] = len(self.domains[variable])
+
+        unassign = sorted(unassign, key=unassign.get)
+        unassign_list = [var for var in unassign]
+
+        # reutrn the first index, which is the fewest in its domain
+        return unassign_list[0]
         raise NotImplementedError
 
     def backtrack(self, assignment):
@@ -334,6 +344,8 @@ def main():
     #     for j in creator.crossword.neighbors(i):
     #         print((i, j))
     print(creator.crossword.variables)
+    for i in creator.domains:
+        print(len(creator.domains[i]))
     # for i in creator.domains:
     #     print(type(i.length)) # since
 
