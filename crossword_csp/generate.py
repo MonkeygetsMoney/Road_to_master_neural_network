@@ -253,6 +253,7 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
+        # if any variable in assignment, then their count doesn't matter
         # loop over all neighbor
         neighbors = self.crossword.neighbors(var)
         words = {}
@@ -263,8 +264,11 @@ class CrosswordCreator():
                 # return overlap coordinate
 
                 for word2 in self.domains[neighbor]:
-                    if word1[index[0]] == word2[index[1]]:
-                        words[word1] += 1
+
+                    # if neighbor not in assignment, then we can count it
+                    if word2 not in assignment:
+                        if word1[index[0]] == word2[index[1]]:
+                            words[word1] += 1
 
         # sorted in ascending order of n, biggest ot smallest
         return sorted(words, key=words.get, reverse=True)
@@ -314,6 +318,43 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
+
+        # check if assignment is comeplete
+        complete = True
+        for variable in self.domains:
+            # if missing a variable, then use backtrack
+            if variable not in assignment:
+                complete = False
+
+        if not complete:
+
+            # variable with fewest option in its domain
+            var = self.select_unassigned_variable(assignment)
+
+            # get the value of the unassigned variable
+            for value in self.order_domain_values(var, assignment):
+
+                # set up new copy of assignment to check if that value is consistent
+                new_assignment = assignment.copy()
+                new_assignment[var] = value
+
+                if self.consistent(new_assignment):
+                    # if consistent, then we can add in the official assignment
+                    assignment[var] = value
+
+                    # try new variable for the unassign, try every option possible according heuristic value
+                    result = self.backtrack(assignment)
+                    if result is not None:
+                        return result
+
+                # if not consistent, remove from assignment (no need here)
+            # if every value failed, then return none
+            return None
+
+        else:
+            # return assignment if already completed
+            return assignment
+                
         raise NotImplementedError
 
 
