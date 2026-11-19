@@ -1,5 +1,6 @@
 import csv
 import sys
+import copy
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
@@ -151,6 +152,12 @@ def train_model(evidence, labels):
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
+
+    # evidence is the info used to predict
+    # define k_nearest neighbor classifier algorithm
+    neighbor = KNeighborsClassifier(n_neighbors=1)
+
+    return neighbor.fit(evidence, labels)
     raise NotImplementedError
 
 
@@ -169,6 +176,9 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
+
+   
+
     raise NotImplementedError
 
 
