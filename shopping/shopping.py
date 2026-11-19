@@ -177,7 +177,35 @@ def evaluate(labels, predictions):
     actual negative labels that were accurately identified.
     """
 
-   
+    # 1 means user that go through with purchase
+    # 0 means user not go through with the purchase
+    # prediction and labels contain 0 and 1, not TRUE and FALSE
+
+    positive_value = 0
+    positive_count = 0
+
+    negative_value = 0
+    negative_count = 0
+
+    for i in range(len(labels)):
+            if labels[i] == 1:
+                positive_count += 1
+    
+                # if prediction correct
+                if labels[i] == predictions[i]:
+                    positive_value += 1
+    
+            if labels[i] == 0:
+                negative_count += 1
+    
+                # if prediction correct
+                if labels[i] == predictions[i]:
+                    negative_value += 1
+
+    sensitivity = positive_value / positive_count
+    specificity = negative_value / negative_count
+
+    return (sensitivity, specificity)
 
     raise NotImplementedError
 
