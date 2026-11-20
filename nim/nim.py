@@ -166,6 +166,32 @@ class NimAI():
         Q-value in `self.q`. If there are no available actions in
         `state`, return 0.
         """
+
+        # should be a list of all the value
+        # get all the possible actions from the Nim class
+        # unseen actions would return 0
+
+        actions = Nim.available_actions(state)
+        # return set of all possible actions in a particular state
+
+        state = tuple(state)
+        reward = []
+
+        for action in actions:
+            if (state, action) in self.q:
+                # get the q value
+                reward.append(self.q[(state, action)])
+
+            else:
+                # if action not explore yet, state as 0
+                reward.append(0)
+
+        if reward == []:
+            # if no action, return 0
+            return 0
+        else:
+            return max(reward)
+
         raise NotImplementedError
 
     def choose_action(self, state, epsilon=True):
@@ -184,7 +210,8 @@ class NimAI():
         options is an acceptable return value.
         """
 
-        # epsilon is how much you want the agent to explore
+  
+
         raise NotImplementedError
 
 
@@ -301,3 +328,5 @@ def play(ai, human_player=None):
             winner = "Human" if game.winner == human_player else "AI"
             print(f"Winner is {winner}")
             return
+
+print(list(Nim.available_actions([1,0,2,2])))
