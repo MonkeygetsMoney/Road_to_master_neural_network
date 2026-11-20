@@ -210,7 +210,33 @@ class NimAI():
         options is an acceptable return value.
         """
 
-  
+        # epsilon is how much you want the agent to explore
+        # set up as list since set cannot be subscriptable
+        actions = list(Nim.available_actions(state))
+
+        # reformat state
+        state = tuple(state)
+
+        best_action = None
+
+        if epsilon:
+            if random.random() < self.epsilon:
+                # with a probability of epsilon, choose randomly
+                return random.choice(actions)
+
+        # otherwise, choose best other possible
+        current_action = dict()
+        for action in actions:
+            if (state, action) in self.q:
+                current_action[action] = self.q[(state, action)]
+
+            else:
+                current_action[action] = 0
+
+        # reverse return in descending order (go down)
+        best_action = sorted(current_action, key=current_action.get, reverse=True)[0]
+
+        return best_action
 
         raise NotImplementedError
 
