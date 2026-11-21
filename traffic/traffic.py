@@ -101,6 +101,36 @@ def get_model():
     `input_shape` of the first layer is `(IMG_WIDTH, IMG_HEIGHT, 3)`.
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
+    # i'm gonna used the model create from the fashion file as a reference
+
+    # build the model
+    model = tf.keras.Sequential([
+        # define input layer
+        tf.keras.layers.Input(shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
+
+        # define the some convolution technique like conv2d and max pooling
+        tf.keras.layers.Conv2D(32, (3,3), activation='relu'),
+        tf.keras.layers.MaxPool2D((2,2)),
+
+        tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
+        tf.keras.layers.MaxPool2D((2,2)),
+
+        tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
+
+        # define our input
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(64, activation='relu'),
+        tf.keras.layers.Dense(NUM_CATEGORIES)
+    ])
+
+    # compile our model
+    model.compile(optimizer='adam',
+
+                  # define our loss function
+                  loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
+                  metrics=['accuracy'])
+
+    return model
     raise NotImplementedError
 
 
