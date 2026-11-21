@@ -58,6 +58,40 @@ def load_data(data_dir):
     be a list of integer labels, representing the categories for each of the
     corresponding `images`.
     """
+
+    # format the path so that it works for all operating system
+    files = os.listdir(data_dir)
+
+    images = []
+    labels = []
+
+    for category in files:
+
+        # check if the path is in the directory
+        try:
+            int(category)
+        except:
+            continue
+
+        path = os.path.join(data_dir, category)
+        pictures = os.listdir(path)
+
+        for picture in pictures:   
+            img_path = os.path.join(path, picture)
+
+            # read the image
+            img = cv2.imread(img_path) 
+            # give the dimension and the 3 which is the color value
+
+            if img is not None:
+                # resize the image
+                img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT), interpolation=cv2.INTER_AREA)
+
+                images.append(img)
+                labels.append(int(category))
+
+    return (images, labels)
+
     raise NotImplementedError
 
 
