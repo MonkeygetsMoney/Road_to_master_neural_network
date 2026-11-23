@@ -63,6 +63,23 @@ def preprocess(sentence):
     character.
     """
 
+    # define the alphabet where each word must contain at least one alphabetic character
+    # assume that if any contain at least one alphabetic character is a word
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+
+    words = []
+
+    for word in nltk.tokenize.word_tokenize(sentence):
+        flag = False
+        word = word.lower()
+        for character in word:
+            if character in alphabet:
+                flag = True
+
+        if flag:
+            words.append(word)
+
+    return words
     
     raise NotImplementedError
 
