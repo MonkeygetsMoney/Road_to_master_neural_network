@@ -17,10 +17,16 @@ V -> "smiled" | "tell" | "were"
 # denote the structure of the sentence
 # starting point of the sentence with noun phrase
 NONTERMINALS = """
-S -> NP VP
+S -> IND | IND Conj IND | IND P IND
 
-NP -> N | Det N
-VP -> V | V NP | Adv V NP
+IND -> NP VP
+
+AdjP -> Adj | Adj AdjP | AdvP
+AdvP -> Adv | Adv AdvP
+PP -> P NP
+
+NP -> N | Det NP | AdjP NP | N PP | Conj NP | NP Adv
+VP -> V | V NP | VP Adv | Adv VP | VP PP | VP Conj VP
 
 """
 
@@ -56,16 +62,16 @@ def main():
 
     #print(list(trees[0].subtrees()))
     # this print out the whole tree first, then the subtree
-    print([t.label() for t in trees[0].subtrees()])
 
-    np_chunk(trees)
-    # # Print each tree with noun phrase chunks
-    # for tree in trees:
-    #     tree.pretty_print()
 
-    #     print("Noun Phrase Chunks")
-    #     for np in np_chunk(tree):
-    #         print(" ".join(np.flatten()))
+    # np_chunk(trees)
+    # Print each tree with noun phrase chunks
+    for tree in trees:
+        tree.pretty_print()
+
+        print("Noun Phrase Chunks")
+        for np in np_chunk(tree):
+            print(" ".join(np.flatten()))
 
 def preprocess(sentence):
     """
@@ -81,7 +87,7 @@ def preprocess(sentence):
 
     words = []
 
-    for word in nltk.tokenize.word_tokenize(sentence):
+    for word in nltk.word_tokenize(sentence):
         flag = False
         word = word.lower()
         for character in word:
@@ -105,11 +111,16 @@ def np_chunk(tree):
     """
     np_words = []
 
-    # loop over how many sentence there is
-    for i in range(len(tree)):
-        for word in tree[i].subtrees():
-            if word.label() == 'NP':
-                np_words.append(' '.join(word.leaves()))
+    # loop over how many sentence there is        
+    for word in tree.subtrees(lambda t: t.label() == 'NP'):
+
+        count = 0
+        # count must be 1 indicate that there's only 1 noun
+        for t in word.subtrees(lambda t: t.label() == 'NP'):
+            count += 1
+
+        if count == 1:
+            np_words.append(word)
                 # use leaves to get the raw word inside it
 
     print(np_words)
