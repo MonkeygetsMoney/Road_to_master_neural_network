@@ -1,4 +1,4 @@
-from logic import *
+from cs50ai.knights.logic import *
 
 AKnight = Symbol("A is a Knight")
 AKnave = Symbol("A is a Knave")

@@ -35,14 +35,14 @@ def main():
     model = TFBertForMaskedLM.from_pretrained(MODEL)
     result = model(**inputs, output_attentions=True)
 
-    # # Generate predictions
-    # mask_token_logits = result.logits[0, mask_token_index]
-    # top_tokens = tf.math.top_k(mask_token_logits, K).indices.numpy()
-    # for token in top_tokens:
-    #     print(text.replace(tokenizer.mask_token, tokenizer.decode([token])))
+    # Generate predictions
+    mask_token_logits = result.logits[0, mask_token_index]
+    top_tokens = tf.math.top_k(mask_token_logits, K).indices.numpy()
+    for token in top_tokens:
+        print(text.replace(tokenizer.mask_token, tokenizer.decode([token])))
 
-    # # Visualize attentions
-    # visualize_attentions(inputs.tokens(), result.attentions)
+    # Visualize attentions
+    visualize_attentions(inputs.tokens(), result.attentions)
 
 
 def get_mask_token_index(mask_token_id, inputs):
@@ -78,7 +78,7 @@ def get_color_for_attention_score(attention_score):
     # TODO: Implement this function
 
     # attention score is a decimal from 0 to 1
-    value = 255 * attention_score
+    value = round(255 * attention_score)
 
     return (value, value, value)
     raise NotImplementedError
@@ -96,12 +96,17 @@ def visualize_attentions(tokens, attentions):
     (starting count from 1).
     """
     # TODO: Update this function to produce diagrams for all layers and heads.
-    generate_diagram(
-        1,
-        1,
-        tokens,
-        attentions[0][0][0]
-    )
+
+    # extend for all heads and layers
+    for i in attentions:
+        layer = i.numpy().item()[0]
+        head = i.numpy().item()[1]
+        generate_diagram(
+            1,
+            1,
+            tokens,
+            attentions[layer][0][head]
+        )
 
 
 def generate_diagram(layer_number, head_number, tokens, attention_weights):

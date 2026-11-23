@@ -2,7 +2,7 @@ import pygame
 import sys
 import time
 
-import tictactoe.tictactoe as ttt
+import cs50ai.tictactoe.tictactoe as ttt
 
 pygame.init()
 size = width, height = 600, 400

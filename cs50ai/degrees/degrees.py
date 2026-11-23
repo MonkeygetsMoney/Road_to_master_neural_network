@@ -1,7 +1,7 @@
 import csv
 import sys
 
-from degrees.util import Node, StackFrontier, QueueFrontier
+from cs50ai.degrees.util import Node, StackFrontier, QueueFrontier
 
 # Maps names to a set of corresponding person_ids
 names = {}
@@ -62,33 +62,26 @@ def main():
     load_data(directory)
     print("Data loaded.")
 
-    name1 = input("Name: ")
-    name2 = input('Name: ')
-    source = shortest_path(name1, name2)
+    source = person_id_for_name(input("Name: "))
     if source is None:
         sys.exit("Person not found.")
+    target = person_id_for_name(input("Name: "))
+    if target is None:
+        sys.exit("Person not found.")
+
+    path = shortest_path(source, target)
+
+    if path is None:
+        print("Not connected.")
     else:
-        print(source)
-        #print(movies)
-        #print(people)
-        # print(movies)
-    # target = person_id_for_name(input("Name: "))
-    # if target is None:
-    #     sys.exit("Person not found.")
-
-    # path = shortest_path(source, target)
-
-    # if path is None:
-    #     print("Not connected.")
-    # else:
-    #     degrees = len(path)
-    #     print(f"{degrees} degrees of separation.")
-    #     path = [(None, source)] + path
-    #     for i in range(degrees):
-    #         person1 = people[path[i][1]]["name"]
-    #         person2 = people[path[i + 1][1]]["name"]
-    #         movie = movies[path[i + 1][0]]["title"]
-    #         print(f"{i + 1}: {person1} and {person2} starred in {movie}")
+        degrees = len(path)
+        print(f"{degrees} degrees of separation.")
+        path = [(None, source)] + path
+        for i in range(degrees):
+            person1 = people[path[i][1]]["name"]
+            person2 = people[path[i + 1][1]]["name"]
+            movie = movies[path[i + 1][0]]["title"]
+            print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
 
 def shortest_path(source, target):
@@ -98,55 +91,30 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    # source is the start person_id
+    # target is the goal person_id
 
+# define the algorithm
     stack = StackFrontier() # last-in first-out
-    queue = QueueFrontier()
+    queue = QueueFrontier() # first-in first-out
 
-    name1 = source.lower()
-    name2 = target.lower()
-    if name1 in names and name2 in names:
-        for name in names:
-            if name1 == name:
-                # use loop to get the value of name (since it's in a dict)
-                for value in names[name]:
-                    name1_id = value
-                    # use this as the root, initial state
-
-            if name2 == name:
-                for value in names[name]:
-                    name2_id = value # this is the goal state
-
-    # try to get the movies the actor starred in
-    if name1_id in people:
-        for person in people:
-            if name1_id == person:
-                movie_ids = people[person]['movies']
-
-    starred_list = []
-    for movie_id in movie_ids:
-        # starred_list.append(movie_id)
-        for movie in movies:
-            if movie == movie_id:
-                starred_list.append(movies[movie_id]['stars'])
-
-    # set up node
-    initial_state = Node(state=name1_id, parent=None, action=None)
-    queue.add(initial_state) 
-    goal_state = name2_id
+    # set up node 
+    initial_state = Node(state=source, parent=None, action=None)
+    queue.add(initial_state)
     state_explored = []
-    # path explored doesn't mean it's the path that lead to the goal
+    # path explored doesn't mean those are the path that lead to the goal
     while True:
         if queue.empty():
             print('frontier is empty')
             return None
         else:
             node = queue.remove()
-            if node.state == goal_state:
+            if node.state == target:
                 actions = []
                 cells = []
                 combine = []
 
-                # working backward to find the path to the goal
+                # working backward to find the path to goal
                 while node.parent is not None:
                     actions.append(node.action)
                     cells.append(node.state)
@@ -156,22 +124,18 @@ def shortest_path(source, target):
 
                 for i in range(len(actions)):
                     combine.append((actions[i], cells[i]))
-
+                # add to combine list so it return (movie_id, person_id)
                 return combine
+
             else:
-                    # if node.action is not None:
-                    #     state_explored.append((node.state, node.action))
-                    # else:
+                # add node to already explored lists
                 state_explored.append(node.state)
 
-                    # find the neighbor frontier
                 for action, state in neighbors_for_person(node.state):
-                        # check if the node is already in the frontier or in the explored state
+                    # explored down the action (movie) and find corresponding people 
                     if not queue.contains_state(state) and state not in state_explored:
-                            # set up new node
                         child = Node(state=state, parent=node, action=action)
                         queue.add(child)
-
 
     # TODO
     raise NotImplementedError
@@ -208,7 +172,7 @@ def neighbors_for_person(person_id):
     Returns (movie_id, person_id) pairs for people
     who starred with a given person.
     """
-    movie_ids = people[person_id]["movies"] # add the pperson into the dictionary
+    movie_ids = people[person_id]["movies"]
     neighbors = set()
     for movie_id in movie_ids:
         for person_id in movies[movie_id]["stars"]:

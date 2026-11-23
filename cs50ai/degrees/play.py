@@ -1,6 +1,6 @@
 # experiment with the class object and methods in util.py
 
-from degrees.util import Node, StackFrontier, QueueFrontier
+from cs50ai.degrees.util import Node, StackFrontier, QueueFrontier
 import random
 
 # root

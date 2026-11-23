@@ -1,6 +1,6 @@
 import sys
 import math
-from crossword import *
+from cs50ai.crossword_csp.crossword import *
 
 
 class CrosswordCreator():
