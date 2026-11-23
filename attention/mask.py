@@ -77,7 +77,10 @@ def get_color_for_attention_score(attention_score):
     """
     # TODO: Implement this function
 
-  
+    # attention score is a decimal from 0 to 1
+    value = 255 * attention_score
+
+    return (value, value, value)
     raise NotImplementedError
 
 
