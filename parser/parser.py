@@ -14,11 +14,19 @@ V -> "arrived" | "came" | "chuckled" | "had" | "lit" | "said" | "sat"
 V -> "smiled" | "tell" | "were"
 """
 
+# denote the structure of the sentence
+# starting point of the sentence with noun phrase
 NONTERMINALS = """
-S -> N V
+S -> NP VP
+
+NP -> N | Det N
+VP -> V | V NP | Adv V NP
+
 """
 
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
+
+# define the structer of the tree
 parser = nltk.ChartParser(grammar)
 
 
@@ -46,14 +54,18 @@ def main():
         print("Could not parse sentence.")
         return
 
-    # Print each tree with noun phrase chunks
-    for tree in trees:
-        tree.pretty_print()
+    #print(list(trees[0].subtrees()))
+    # this print out the whole tree first, then the subtree
+    print([t.label() for t in trees[0].subtrees()])
 
-        print("Noun Phrase Chunks")
-        for np in np_chunk(tree):
-            print(" ".join(np.flatten()))
+    np_chunk(trees)
+    # # Print each tree with noun phrase chunks
+    # for tree in trees:
+    #     tree.pretty_print()
 
+    #     print("Noun Phrase Chunks")
+    #     for np in np_chunk(tree):
+    #         print(" ".join(np.flatten()))
 
 def preprocess(sentence):
     """
@@ -91,8 +103,17 @@ def np_chunk(tree):
     whose label is "NP" that does not itself contain any other
     noun phrases as subtrees.
     """
-    raise NotImplementedError
+    np_words = []
 
+    # loop over how many sentence there is
+    for i in range(len(tree)):
+        for word in tree[i].subtrees():
+            if word.label() == 'NP':
+                np_words.append(' '.join(word.leaves()))
+                # use leaves to get the raw word inside it
+
+    print(np_words)
+    return np_words
 
 if __name__ == "__main__":
     main()
