@@ -117,7 +117,7 @@ def get_model():
 
         tf.keras.layers.Conv2D(64, (3,3), activation='relu'),
 
-        # define our input
+        # define input nodes
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(64, activation='relu'),
         tf.keras.layers.Dense(NUM_CATEGORIES)
