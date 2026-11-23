@@ -1,5 +1,6 @@
 import sys
 import tensorflow as tf
+import numpy as np
 
 from PIL import Image, ImageDraw, ImageFont
 from transformers import AutoTokenizer, TFBertForMaskedLM
@@ -22,16 +23,17 @@ def main():
     # Tokenize input
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
     inputs = tokenizer(text, return_tensors="tf")
-    print(101 in inputs['input_ids'][0])
+    print(tokenizer.tokenize(text))
+    print(list(inputs['input_ids'][0].numpy()))
     print(tokenizer.convert_ids_to_tokens(inputs['input_ids'][0]))
 
-    # mask_token_index = get_mask_token_index(tokenizer.mask_token_id, inputs)
-    # if mask_token_index is None:
-    #     sys.exit(f"Input must include mask token {tokenizer.mask_token}.")
+    mask_token_index = get_mask_token_index(tokenizer.mask_token_id, inputs)
+    if mask_token_index is None:
+        sys.exit(f"Input must include mask token {tokenizer.mask_token}.")
 
-    # # Use model to process input
-    # model = TFBertForMaskedLM.from_pretrained(MODEL)
-    # result = model(**inputs, output_attentions=True)
+    # Use model to process input
+    model = TFBertForMaskedLM.from_pretrained(MODEL)
+    result = model(**inputs, output_attentions=True)
 
     # # Generate predictions
     # mask_token_logits = result.logits[0, mask_token_index]
@@ -49,7 +51,19 @@ def get_mask_token_index(mask_token_id, inputs):
     `None` if not present in the `inputs`.
     """
 
+    # check if the mask in the input
+    if mask_token_id in inputs['input_ids'][0].numpy():
+        index = 0
+        for i in inputs['input_ids'][0].numpy():
 
+            if mask_token_id == i:
+                return int(index)
+
+            else:
+                index += 1
+
+    else:
+        return None
 
     # TODO: Implement this function
     raise NotImplementedError
@@ -62,6 +76,8 @@ def get_color_for_attention_score(attention_score):
     given `attention_score`. Each value should be in the range [0, 255].
     """
     # TODO: Implement this function
+
+  
     raise NotImplementedError
 
 
