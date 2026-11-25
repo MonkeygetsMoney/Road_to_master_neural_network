@@ -57,3 +57,10 @@ print(y)
 vv = np.tile(v, (4, 1)) # stack v in 4 rows and 3 columns
 
 y = x + vv # add v to each row of x
+
+
+number = np.array([])
+number = np.append(number, [1], axis=1)
+number = np.append(number, [2], axis=1)
+
+print(number)
