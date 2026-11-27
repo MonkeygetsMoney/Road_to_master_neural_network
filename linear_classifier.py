@@ -107,7 +107,15 @@ class LinearClassifier(object):
         # TODO:                                                                   #
         # Implement this method. Store the predicted labels in y_pred.            #
         ###########################################################################
-
+        
+        # print(self.W.shape)
+        # (3073, 10)
+        # ypred would have shape of (49000, 10), which is a score for each categories
+        # get the index of max 
+        # use argmax() to get the index
+        labels = X.dot(self.W)
+        y_pred = labels.argmax(axis = 1)
+        
         return y_pred
 
     def loss(self, X_batch, y_batch, reg):
